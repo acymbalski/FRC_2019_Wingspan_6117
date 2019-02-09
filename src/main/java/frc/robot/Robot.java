@@ -148,7 +148,7 @@ public class Robot extends TimedRobot {
     // solenoids will go in their respective class (CargoArm or HatchArm)
     // we will likely have the solenoid controlled with two routes
     // they are controlled from PWM channels 0 and 1, CAN channel 0
-    solen = new Solenoid(0 /* can channel */, 0 /*PWM channel*/);
+    //solen = new Solenoid(0 /* can channel */, 0 /*PWM channel*/);
 
     // air compressor
     // airCompressor0 = new Compressor();
@@ -246,6 +246,7 @@ public class Robot extends TimedRobot {
     updateShuffleboard();
 
     configgy.discoverMotors();
+    configgy.discoverPneumatics();
 
     System.out.println("Teleop initialization complete.");
   }
@@ -261,8 +262,8 @@ public class Robot extends TimedRobot {
     return;
 
 
-    updateVars();
-    updateShuffleboard();
+    // updateVars();
+    // updateShuffleboard();
 
     // move motors by joystick
     // motorPwm0.set(joyDriver1.getX());
@@ -304,77 +305,77 @@ public class Robot extends TimedRobot {
     // System.out.println("----------------");
 
 
-    double left_joystick = Math.round(joyDriver1.getRawAxis(1));
-    double right_joystick = Math.round(joyDriver1.getRawAxis(5));
-    double left_joystick_lr = Math.round(joyDriver1.getRawAxis(0));
-    double right_joystick_lr = Math.round(joyDriver1.getRawAxis(4));
-    double left_trigger = Math.round(joyDriver1.getRawAxis(2));
-    double right_trigger = Math.round(joyDriver1.getRawAxis(3));
+    // double left_joystick = Math.round(joyDriver1.getRawAxis(1));
+    // double right_joystick = Math.round(joyDriver1.getRawAxis(5));
+    // double left_joystick_lr = Math.round(joyDriver1.getRawAxis(0));
+    // double right_joystick_lr = Math.round(joyDriver1.getRawAxis(4));
+    // double left_trigger = Math.round(joyDriver1.getRawAxis(2));
+    // double right_trigger = Math.round(joyDriver1.getRawAxis(3));
 
-    double left_wheel_amt = left_joystick * (0.5 + (0.5 * left_trigger));
-    double right_wheel_amt = -1 * (right_joystick * (0.5 + (0.5 * right_trigger)));
-
-
-    // drive robot
-    driveTrain.drive(Math.round(joyDriver1.getRawAxis(1)), Math.round(joyDriver1.getRawAxis(5)));
-
-    if(joyDriver1.getRawButtonPressed(1))
-    {
-      System.out.println("Drive tank toggled from: " + drive_tank + " to " + !drive_tank);
-      drive_tank = !drive_tank;
-    }
+    // double left_wheel_amt = left_joystick * (0.5 + (0.5 * left_trigger));
+    // double right_wheel_amt = -1 * (right_joystick * (0.5 + (0.5 * right_trigger)));
 
 
-    // btn 5 = lb
-    // btn 6 = rb
+    // // drive robot
+    // driveTrain.drive(Math.round(joyDriver1.getRawAxis(1)), Math.round(joyDriver1.getRawAxis(5)));
+
+    // if(joyDriver1.getRawButtonPressed(1))
+    // {
+    //   System.out.println("Drive tank toggled from: " + drive_tank + " to " + !drive_tank);
+    //   drive_tank = !drive_tank;
+    // }
+
+
+    // // btn 5 = lb
+    // // btn 6 = rb
     
-    if(joyDriver1.getRawButtonPressed(5))
-    {
-      System.out.println("Turning left!");
-      turning_left = !turning_left;
-      turning_init_x = yaw;
-      System.out.println("Current yaw: " + turning_init_x);
-      System.out.println("Turning to: " + (turning_init_x - 90));
-    }
-    if(joyDriver1.getRawButtonPressed(6))
-    {
-      System.out.println("Turning right!");
-      turning_right = !turning_right;
-      turning_init_x = yaw;
-      System.out.println("Current yaw: " + turning_init_x);
-    }
+    // if(joyDriver1.getRawButtonPressed(5))
+    // {
+    //   System.out.println("Turning left!");
+    //   turning_left = !turning_left;
+    //   turning_init_x = yaw;
+    //   System.out.println("Current yaw: " + turning_init_x);
+    //   System.out.println("Turning to: " + (turning_init_x - 90));
+    // }
+    // if(joyDriver1.getRawButtonPressed(6))
+    // {
+    //   System.out.println("Turning right!");
+    //   turning_right = !turning_right;
+    //   turning_init_x = yaw;
+    //   System.out.println("Current yaw: " + turning_init_x);
+    // }
 
-    if(turning_left)
-    {
-      System.out.println("Turning left: " + (Math.abs(turning_init_x - yaw) % 360));
-      if(Math.abs(turning_init_x - yaw) % 360 < 90)
-      {
-        set_left_motors(0.25);
-        set_right_motors(0.25);
-      }
-      else
-      {
-        turning_left = false;
-        set_left_motors(0);
-        set_right_motors(0);
-      }
-    }
+    // if(turning_left)
+    // {
+    //   System.out.println("Turning left: " + (Math.abs(turning_init_x - yaw) % 360));
+    //   if(Math.abs(turning_init_x - yaw) % 360 < 90)
+    //   {
+    //     set_left_motors(0.25);
+    //     set_right_motors(0.25);
+    //   }
+    //   else
+    //   {
+    //     turning_left = false;
+    //     set_left_motors(0);
+    //     set_right_motors(0);
+    //   }
+    // }
 
-    if(turning_right)
-    {
-      System.out.println("Turning right: " + (Math.abs(gyro.getYaw() - turning_init_x) % 360));
-      if(Math.abs(gyro.getYaw() - turning_init_x) % 360 < 90)
-      {
-        set_left_motors(0.25);
-        set_right_motors(0.25);
-      }
-      else
-      {
-        turning_right = false;
-        set_left_motors(0);
-        set_right_motors(0);
-      }
-    }
+    // if(turning_right)
+    // {
+    //   System.out.println("Turning right: " + (Math.abs(gyro.getYaw() - turning_init_x) % 360));
+    //   if(Math.abs(gyro.getYaw() - turning_init_x) % 360 < 90)
+    //   {
+    //     set_left_motors(0.25);
+    //     set_right_motors(0.25);
+    //   }
+    //   else
+    //   {
+    //     turning_right = false;
+    //     set_left_motors(0);
+    //     set_right_motors(0);
+    //   }
+    // }
 
 
   }
@@ -390,11 +391,11 @@ public class Robot extends TimedRobot {
 
   private void drive_tank(double left_speed, double right_speed)
   {
-    motorCan1.set(ControlMode.PercentOutput, left_speed);
-    motorCan0.set(ControlMode.PercentOutput, right_speed);
+    // motorCan1.set(ControlMode.PercentOutput, left_speed);
+    // motorCan0.set(ControlMode.PercentOutput, right_speed);
 
-    motorCan2.set(ControlMode.PercentOutput, left_speed);
-    motorCan3.set(ControlMode.PercentOutput, right_speed);
+    // motorCan2.set(ControlMode.PercentOutput, left_speed);
+    // motorCan3.set(ControlMode.PercentOutput, right_speed);
   }
 
   private void drive_normal(double speed, double lr_stick)
@@ -402,8 +403,8 @@ public class Robot extends TimedRobot {
     double left_speed = 0;
     double right_speed = 0;
 
-    set_left_motors(speed + (lr_stick));//left_speed * (0.5 * lr_stick));
-    set_right_motors(speed + (lr_stick));
+    // set_left_motors(speed + (lr_stick));//left_speed * (0.5 * lr_stick));
+    // set_right_motors(speed + (lr_stick));
 
     // left
     // speed + ((Math.signum(lr_stick) * lr_stick))
@@ -423,10 +424,10 @@ public class Robot extends TimedRobot {
   // useful for testing and maybe that's it
   private void setMotors(double speed)
   {
-    motorPwm0.set(speed);
-    motorPwm1.set(speed);
-    motorCan0.set(ControlMode.PercentOutput, speed * 10);
-    motorCan1.set(ControlMode.PercentOutput, speed * 10);
+    // motorPwm0.set(speed);
+    // motorPwm1.set(speed);
+    // motorCan0.set(ControlMode.PercentOutput, speed * 10);
+    // motorCan1.set(ControlMode.PercentOutput, speed * 10);
   }
 
   private void updateVars()
