@@ -7,9 +7,9 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 public class DriveTrain
 {
 
-    // CAN motors
-    private TalonSRX moRightTal, moLeftTal;
-    private VictorSPX moLeftVic, moRightVic;
+    // motors
+    private TalonSRX moTalWhlL, moTalWhlR;
+    private VictorSPX moVicWhlL, moVicWhlR;
 
 
     // set speed limitations
@@ -22,17 +22,23 @@ public class DriveTrain
     public DriveTrain()
     {
         
-        // init motors: CAN
-        moRightTal = new TalonSRX(0);
-        moLeftTal = new TalonSRX(1);
-        moLeftVic = new VictorSPX(2);
-        moRightVic = new VictorSPX(3);
+        // init motors
+        
+        // left motors
+        // (must be inverted)
+        moTalWhlL = new TalonSRX(1);
+        moVicWhlL = new VictorSPX(3);
+        moTalWhlL.setInverted(false);
+        moVicWhlL.setInverted(false);
 
-        // set CAN motors to 0%
-        moRightTal.set(ControlMode.PercentOutput, 0);
-        moLeftTal.set(ControlMode.PercentOutput, 0);
-        moLeftVic.set(ControlMode.PercentOutput, 0);
-        moRightVic.set(ControlMode.PercentOutput, 0);
+        // right motors
+        moTalWhlR = new TalonSRX(0);
+        moVicWhlR = new VictorSPX(7);
+        moTalWhlR.setInverted(true);
+        moVicWhlR.setInverted(true);
+
+        // stop all motors
+        stop();
     }
 
     public void drive(double left_amt, double right_amt)
@@ -45,18 +51,20 @@ public class DriveTrain
     {
         set_left_motors(0);
         set_right_motors(0);
+
+        System.out.println("Motors stopped.");
     }
 
     private void set_left_motors(double amt)
     {
-        moLeftTal.set(ControlMode.PercentOutput, amt);
-        moLeftVic.set(ControlMode.PercentOutput, amt);
+        moTalWhlL.set(ControlMode.PercentOutput, amt);
+        moVicWhlL.set(ControlMode.PercentOutput, amt);
     }
 
     private void set_right_motors(double amt)
     {
-        moRightTal.set(ControlMode.PercentOutput, amt);
-        moRightVic.set(ControlMode.PercentOutput, amt);
+        moTalWhlR.set(ControlMode.PercentOutput, amt);
+        moVicWhlR.set(ControlMode.PercentOutput, amt);
     }
 
 }

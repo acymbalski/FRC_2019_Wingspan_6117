@@ -75,6 +75,10 @@ public class Robot extends TimedRobot {
 
   private VictorSPX victor4, victor5, victor6, victor7;
 
+  // drewnote: This will alter all speeds!
+  // typically we will set it to half to be safe until we're all set
+  public double speedModifier = 0.5;
+
 
   // air compressor
   //private Compressor airCompressor0;
@@ -110,7 +114,7 @@ public class Robot extends TimedRobot {
 
   // drewnote: used for debug
   // has a method to spin all motors individually to check who is who
-  RobotConfigurator configgy;
+  //RobotConfigurator configgy;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -142,7 +146,7 @@ public class Robot extends TimedRobot {
     victor6 = new VictorSPX(6);
     victor7 = new VictorSPX(7);
 
-    configgy = new RobotConfigurator();
+    //configgy = new RobotConfigurator();
 
 
     // solenoids will go in their respective class (CargoArm or HatchArm)
@@ -210,23 +214,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic()
   {
-    //solen.set(sol);
-
-    //sol = !sol;
-
-    //victor3.set
-    //motorPwm0.set(1);
-    //motorPwm1.set(1);
-
-    
-
-    // victor4.set(ControlMode.PercentOutput, 1);
-    // victor5.set(ControlMode.PercentOutput, 1);
-    // victor6.set(ControlMode.PercentOutput, 1);
-    //victor7.set(ControlMode.PercentOutput, 1);
-
-    
-
 
   }
 
@@ -245,8 +232,8 @@ public class Robot extends TimedRobot {
     
     updateShuffleboard();
 
-    configgy.discoverMotors();
-    configgy.discoverPneumatics();
+    // configgy.discoverMotors();
+    // configgy.discoverPneumatics();
 
     System.out.println("Teleop initialization complete.");
   }
@@ -257,126 +244,79 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic()
   {
-    //TODO
-    //drewnote: this is temporary
-    return;
+    // drive robot
+    double leftJoystick = Math.round(joyDriver1.getRawAxis(1));
+    double rightJoystick = Math.round(joyDriver1.getRawAxis(3));
 
+    driveTrain.drive(leftJoystick * speedModifier, rightJoystick * speedModifier);
 
-    // updateVars();
-    // updateShuffleboard();
+    // control hatch arm
+    if(joyDriver1.getRawButtonPressed(2))
+    {
+      hatchArm.togglePistons();
+    }
 
-    // move motors by joystick
-    // motorPwm0.set(joyDriver1.getX());
-    // motorPwm1.set(joyDriver1.getY());
-    // System.out.println("1(X, Y) = (" + joyDriver1.getX() + ", " + joyDriver1.getY() + ")");
-    // System.out.println("2(X, Y) = (" + joyDriver2.getX() + ", " + joyDriver2.getY() + ")");
+    // button 7: L2
+    // button 8: R2
+    // L2 will reverse the finger
+    // R2 will rotate it forward
+    if(joyDriver1.getRawButton(7))
+    {
+      hatchArm.rotateFinger(-1 * speedModifier);
+    }
+    else
+    {
+      if(joyDriver1.getRawButton(8))
+      {
+        hatchArm.rotateFinger(1 * speedModifier);
+      }
+      else
+      {
+        hatchArm.rotateFinger(0);
+      }
+    }
+
     
-    // System.out.println("----------------");
+    // button 5: L1
+    // button 6: R1
+    // L1 will move the hatch arm one way
+    // R1 will move it the other way
+    if(joyDriver1.getRawButton(5))
+    {
+      hatchArm.rotateArm(-1 * speedModifier);
+    }
+    else
+    {
+      if(joyDriver1.getRawButton(6))
+      {
+        hatchArm.rotateArm(1 * speedModifier);
+      }
+      else
+      {
+        hatchArm.rotateArm(0);
+      }
+    }
 
-    // // left stick
-    // // right = positive
-    // // left = negative
-    // System.out.println(joyDriver1.getRawAxis(0));
-
-    // // left stick
-    // // up = negative
-    // // down = positive
-    // System.out.println(joyDriver1.getRawAxis(1));
-
-    // // left trigger
-    // // neutral = 0
-    // // depressed = 1
-    // System.out.println(joyDriver1.getRawAxis(2));
     
-    // // right trigger
-    // // neutral = 0
-    // // depressed = 1
-    // System.out.println(joyDriver1.getRawAxis(3));
-
-    // // right stick
-    // // left = negative
-    // // rigth = positive
-    // System.out.println(joyDriver1.getRawAxis(4));
-
-    // // right stick
-    // // up = negative
-    // // down = positive
-    // System.out.println(joyDriver1.getRawAxis(5));
-    // System.out.println("----------------");
-
-
-    // double left_joystick = Math.round(joyDriver1.getRawAxis(1));
-    // double right_joystick = Math.round(joyDriver1.getRawAxis(5));
-    // double left_joystick_lr = Math.round(joyDriver1.getRawAxis(0));
-    // double right_joystick_lr = Math.round(joyDriver1.getRawAxis(4));
-    // double left_trigger = Math.round(joyDriver1.getRawAxis(2));
-    // double right_trigger = Math.round(joyDriver1.getRawAxis(3));
-
-    // double left_wheel_amt = left_joystick * (0.5 + (0.5 * left_trigger));
-    // double right_wheel_amt = -1 * (right_joystick * (0.5 + (0.5 * right_trigger)));
-
-
-    // // drive robot
-    // driveTrain.drive(Math.round(joyDriver1.getRawAxis(1)), Math.round(joyDriver1.getRawAxis(5)));
-
-    // if(joyDriver1.getRawButtonPressed(1))
-    // {
-    //   System.out.println("Drive tank toggled from: " + drive_tank + " to " + !drive_tank);
-    //   drive_tank = !drive_tank;
-    // }
-
-
-    // // btn 5 = lb
-    // // btn 6 = rb
-    
-    // if(joyDriver1.getRawButtonPressed(5))
-    // {
-    //   System.out.println("Turning left!");
-    //   turning_left = !turning_left;
-    //   turning_init_x = yaw;
-    //   System.out.println("Current yaw: " + turning_init_x);
-    //   System.out.println("Turning to: " + (turning_init_x - 90));
-    // }
-    // if(joyDriver1.getRawButtonPressed(6))
-    // {
-    //   System.out.println("Turning right!");
-    //   turning_right = !turning_right;
-    //   turning_init_x = yaw;
-    //   System.out.println("Current yaw: " + turning_init_x);
-    // }
-
-    // if(turning_left)
-    // {
-    //   System.out.println("Turning left: " + (Math.abs(turning_init_x - yaw) % 360));
-    //   if(Math.abs(turning_init_x - yaw) % 360 < 90)
-    //   {
-    //     set_left_motors(0.25);
-    //     set_right_motors(0.25);
-    //   }
-    //   else
-    //   {
-    //     turning_left = false;
-    //     set_left_motors(0);
-    //     set_right_motors(0);
-    //   }
-    // }
-
-    // if(turning_right)
-    // {
-    //   System.out.println("Turning right: " + (Math.abs(gyro.getYaw() - turning_init_x) % 360));
-    //   if(Math.abs(gyro.getYaw() - turning_init_x) % 360 < 90)
-    //   {
-    //     set_left_motors(0.25);
-    //     set_right_motors(0.25);
-    //   }
-    //   else
-    //   {
-    //     turning_right = false;
-    //     set_left_motors(0);
-    //     set_right_motors(0);
-    //   }
-    // }
-
+    // button 1: x
+    // button 4: y
+    // button 1 will move the ball arm one way
+    // button 4 will move it the other way
+    if(joyDriver1.getRawButton(1))
+    {
+      cargoArm.rotateArm(-1 * speedModifier);
+    }
+    else
+    {
+      if(joyDriver1.getRawButton(4))
+      {
+        cargoArm.rotateArm(1 * speedModifier);
+      }
+      else
+      {
+        cargoArm.rotateArm(0);
+      }
+    }
 
   }
 
@@ -387,47 +327,6 @@ public class Robot extends TimedRobot {
   public void testPeriodic()
   {
 
-  }
-
-  private void drive_tank(double left_speed, double right_speed)
-  {
-    // motorCan1.set(ControlMode.PercentOutput, left_speed);
-    // motorCan0.set(ControlMode.PercentOutput, right_speed);
-
-    // motorCan2.set(ControlMode.PercentOutput, left_speed);
-    // motorCan3.set(ControlMode.PercentOutput, right_speed);
-  }
-
-  private void drive_normal(double speed, double lr_stick)
-  {
-    double left_speed = 0;
-    double right_speed = 0;
-
-    // set_left_motors(speed + (lr_stick));//left_speed * (0.5 * lr_stick));
-    // set_right_motors(speed + (lr_stick));
-
-    // left
-    // speed + ((Math.signum(lr_stick) * lr_stick))
-    
-    // // right
-    // speed * (-1 * Math.signum(lr_stick))
-
-    // // up
-    // speed
-
-    // down
-
-  }
-
-
-  // use this method to set all motors to a speed
-  // useful for testing and maybe that's it
-  private void setMotors(double speed)
-  {
-    // motorPwm0.set(speed);
-    // motorPwm1.set(speed);
-    // motorCan0.set(ControlMode.PercentOutput, speed * 10);
-    // motorCan1.set(ControlMode.PercentOutput, speed * 10);
   }
 
   private void updateVars()

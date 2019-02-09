@@ -147,15 +147,7 @@ public class RobotConfigurator
         System.out.println("Press 'B' to exit.");
         System.out.println("-------------------");
         System.out.println();
-
-        if(pneu_index < 3)
-        {
-            System.out.println("Spinning Talon " + pneu_index);
-        }
-        else
-        {
-            System.out.println("Spinning Victor " + (pneu_index - 3));
-        }
+        System.out.println("Firing pneumatic #" + pneu_index);
 
         while(true)
         {
