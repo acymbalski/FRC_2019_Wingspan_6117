@@ -34,8 +34,8 @@ public class DriveTrain
         // right motors
         moTalWhlR = new TalonSRX(0);
         moVicWhlR = new VictorSPX(7);
-        moTalWhlR.setInverted(true);
-        moVicWhlR.setInverted(true);
+        // moTalWhlR.setInverted(true);
+        // moVicWhlR.setInverted(false);
 
         // stop all motors
         stop();
@@ -43,8 +43,8 @@ public class DriveTrain
 
     public void drive(double left_amt, double right_amt)
     {
-        set_left_motors(left_amt * speedFactor);
-        set_right_motors(right_amt * speedFactor);
+        set_left_motors(left_amt);// * speedFactor);
+        set_right_motors(right_amt);// * speedFactor);
     }
 
     public void stop()
@@ -63,8 +63,8 @@ public class DriveTrain
 
     private void set_right_motors(double amt)
     {
-        moTalWhlR.set(ControlMode.PercentOutput, amt);
-        moVicWhlR.set(ControlMode.PercentOutput, amt);
+        moTalWhlR.set(ControlMode.PercentOutput, -amt);
+        moVicWhlR.set(ControlMode.PercentOutput, -amt);
     }
 
 }
