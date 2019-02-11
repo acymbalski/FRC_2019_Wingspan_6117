@@ -245,8 +245,8 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic()
   {
     // drive robot
-    double leftJoystick = Math.round(joyDriver1.getRawAxis(1));
-    double rightJoystick = Math.round(joyDriver1.getRawAxis(3));
+    double leftJoystick = joyDriver1.getRawAxis(1);
+    double rightJoystick = joyDriver1.getRawAxis(3);
 
     driveTrain.drive(leftJoystick * speedModifier, rightJoystick * speedModifier);
 
