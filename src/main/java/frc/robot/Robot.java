@@ -256,6 +256,18 @@ public class Robot extends TimedRobot {
       hatchArm.togglePistons();
     }
 
+    // open/close hatch grabber arms
+    if(joyDriver1.getRawButtonPressed(3))
+    {
+      hatchArm.toggleGrabber();
+    }
+
+    // flip drive orientation
+    if(joyDriver1.getRawButtonPressed(9))
+    {
+      driveTrain.flip_orientation();
+    }
+
     // button 7: L2
     // button 8: R2
     // L2 will reverse the finger
@@ -283,13 +295,13 @@ public class Robot extends TimedRobot {
     // R1 will move it the other way
     if(joyDriver1.getRawButton(5))
     {
-      hatchArm.rotateArm(-1 * speedModifier);
+      hatchArm.rotateArm(-1 * speedModifier * 0.75);
     }
     else
     {
       if(joyDriver1.getRawButton(6))
       {
-        hatchArm.rotateArm(1 * speedModifier);
+        hatchArm.rotateArm(1 * speedModifier * 0.75);
       }
       else
       {

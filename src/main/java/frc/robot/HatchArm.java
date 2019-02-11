@@ -12,6 +12,10 @@ public class HatchArm
     Solenoid solHatchPush;
     Solenoid solHatchRetract;
 
+    // solenoids to control the hatch grabber
+    Solenoid solHatchOpen;
+    Solenoid solHatchClose;
+
     // hatch pinching finger
     VictorSPX moVicHatFin;
 
@@ -19,17 +23,22 @@ public class HatchArm
     VictorSPX moVicHatArm;
 
     public boolean pistonsOut;
+    public boolean grabberOpen;
 
     public HatchArm()
     {
         solHatchPush = new Solenoid(0, 5);
         solHatchRetract = new Solenoid(0, 4);
 
+        solHatchOpen = new Solenoid(0, 3);
+        solHatchClose = new Solenoid(0, 6);
+
         moVicHatFin = new VictorSPX(5);
         moVicHatArm = new VictorSPX(6);
 
         retractPistons();
         pistonsOut = false;
+        grabberOpen = false;
     }
 
     public HatchArm(int pcmPushPort, int canPushPort, int pcmRetractPort, int canRetractPort)
@@ -60,6 +69,31 @@ public class HatchArm
 
     }
 
+    public void openGrabber()
+    {
+        solHatchClose.set(false);
+        solHatchOpen.set(true);
+    }
+
+    public void closeGrabber()
+    {
+        solHatchOpen.set(false);
+        solHatchClose.set(true);
+    }
+
+    public void toggleGrabber()
+    {
+        System.out.println("Toggling grabber to: " + grabberOpen);
+        if(grabberOpen)
+        {
+            closeGrabber();
+        }
+        else
+        {
+            openGrabber();
+        }
+        grabberOpen = !grabberOpen;
+    }
 
     /**
 	 * Pushes the hatch panel off.

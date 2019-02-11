@@ -19,6 +19,9 @@ public class DriveTrain
     // etc.
     private double speedFactor = 0.5;
 
+    // so we can flip forwards/backwards driving
+    private int orientation;
+
     public DriveTrain()
     {
         
@@ -37,14 +40,27 @@ public class DriveTrain
         // moTalWhlR.setInverted(true);
         // moVicWhlR.setInverted(false);
 
+        orientation = 1;
+
         // stop all motors
         stop();
     }
 
     public void drive(double left_amt, double right_amt)
     {
-        set_left_motors(left_amt);// * speedFactor);
-        set_right_motors(right_amt);// * speedFactor);
+        // if driving forward
+        if(orientation == 1)
+        {
+            set_left_motors(left_amt);// * speedFactor);
+            set_right_motors(right_amt);// * speedFactor);
+        }
+        // otherwise, if driving backwards, flip the controls
+        // (and reverse which joystick controls which motor)
+        else if(orientation == -1)
+        {
+            set_left_motors(right_amt);
+            set_right_motors(left_amt);
+        }
     }
 
     public void stop()
@@ -57,14 +73,20 @@ public class DriveTrain
 
     private void set_left_motors(double amt)
     {
-        moTalWhlL.set(ControlMode.PercentOutput, amt);
-        moVicWhlL.set(ControlMode.PercentOutput, amt);
+        moTalWhlL.set(ControlMode.PercentOutput, amt * orientation);
+        moVicWhlL.set(ControlMode.PercentOutput, amt * orientation);
     }
 
     private void set_right_motors(double amt)
     {
-        moTalWhlR.set(ControlMode.PercentOutput, -amt);
-        moVicWhlR.set(ControlMode.PercentOutput, -amt);
+        moTalWhlR.set(ControlMode.PercentOutput, -amt * orientation);
+        moVicWhlR.set(ControlMode.PercentOutput, -amt * orientation);
+    }
+
+    public void flip_orientation()
+    {
+        System.out.println("Flipping orientation!");
+        orientation *= -1;
     }
 
 }
