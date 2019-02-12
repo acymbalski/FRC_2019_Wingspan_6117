@@ -111,6 +111,8 @@ public class Robot extends TimedRobot {
   CargoArm cargoArm;
   HatchArm hatchArm;
 
+  Buttons buttons;
+
 
   // drewnote: used for debug
   // has a method to spin all motors individually to check who is who
@@ -145,6 +147,8 @@ public class Robot extends TimedRobot {
     victor5 = new VictorSPX(5);
     victor6 = new VictorSPX(6);
     victor7 = new VictorSPX(7);
+
+    buttons = new Buttons();
 
     //configgy = new RobotConfigurator();
 
@@ -245,25 +249,25 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic()
   {
     // drive robot
-    double leftJoystick = joyDriver1.getRawAxis(1);
-    double rightJoystick = joyDriver1.getRawAxis(3);
+    double leftJoystick = joyDriver1.getRawAxis(buttons.LAxisUD);
+    double rightJoystick = joyDriver1.getRawAxis(buttons.RAxisUD);
 
     driveTrain.drive(leftJoystick * speedModifier, rightJoystick * speedModifier);
 
     // control hatch arm
-    if(joyDriver1.getRawButtonPressed(2))
+    if(joyDriver1.getRawButtonPressed(buttons.A))
     {
       hatchArm.togglePistons();
     }
 
     // open/close hatch grabber arms
-    if(joyDriver1.getRawButtonPressed(3))
+    if(joyDriver1.getRawButtonPressed(buttons.B))
     {
       hatchArm.toggleGrabber();
     }
 
     // flip drive orientation
-    if(joyDriver1.getRawButtonPressed(9))
+    if(joyDriver1.getRawButtonPressed(buttons.Select))
     {
       driveTrain.flip_orientation();
     }
@@ -272,13 +276,13 @@ public class Robot extends TimedRobot {
     // button 8: R2
     // L2 will reverse the finger
     // R2 will rotate it forward
-    if(joyDriver1.getRawButton(7))
+    if(joyDriver1.getRawButton(buttons.L2))
     {
       hatchArm.rotateFinger(-1 * speedModifier);
     }
     else
     {
-      if(joyDriver1.getRawButton(8))
+      if(joyDriver1.getRawButton(buttons.R2))
       {
         hatchArm.rotateFinger(1 * speedModifier);
       }
@@ -293,13 +297,13 @@ public class Robot extends TimedRobot {
     // button 6: R1
     // L1 will move the hatch arm one way
     // R1 will move it the other way
-    if(joyDriver1.getRawButton(5))
+    if(joyDriver1.getRawButton(buttons.L1))
     {
       hatchArm.rotateArm(-1 * speedModifier * 0.75);
     }
     else
     {
-      if(joyDriver1.getRawButton(6))
+      if(joyDriver1.getRawButton(buttons.R1))
       {
         hatchArm.rotateArm(1 * speedModifier * 0.75);
       }
@@ -314,13 +318,13 @@ public class Robot extends TimedRobot {
     // button 4: y
     // button 1 will move the ball arm one way
     // button 4 will move it the other way
-    if(joyDriver1.getRawButton(1))
+    if(joyDriver1.getRawButton(buttons.X))
     {
       cargoArm.rotateArm(-1 * speedModifier);
     }
     else
     {
-      if(joyDriver1.getRawButton(4))
+      if(joyDriver1.getRawButton(buttons.Y))
       {
         cargoArm.rotateArm(1 * speedModifier);
       }
