@@ -89,4 +89,9 @@ public class DriveTrain
         orientation *= -1;
     }
 
+    public boolean isFacingForward()
+    {
+        return orientation == 1;
+    }
+
 }
