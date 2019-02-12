@@ -9,35 +9,18 @@ package frc.robot;
 
 // robot
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
-// air compressor
-import edu.wpi.first.wpilibj.Compressor;
 
 // joystick
 import edu.wpi.first.wpilibj.Joystick;
 
 // smart dashboard
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-//import edu.wpi.first.wpilibj.smartdashboard.gui;
 import edu.wpi.first.wpilibj.shuffleboard.*;
 
 // cameras
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.cameraserver.CameraServer;
-
-// CAN support
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-
-// PWM motors
-import edu.wpi.first.wpilibj.PWMVictorSPX;
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.VictorSP;
-import edu.wpi.first.wpilibj.SpeedController;
 
 // gyro
 import com.kauailabs.navx.frc.AHRS;
@@ -50,13 +33,8 @@ import edu.wpi.first.wpilibj.I2C;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
-public class Robot extends TimedRobot {
-
-  // this will allow us to switch autonomous modes without a code change
-  // private static final String autLeft = "Left";
-  // private static final String autCenter = "Center";
-  // private static final String autRight = "Right";
-  // private final SendableChooser<String> auton_mode = new SendableChooser<>();
+public class Robot extends TimedRobot
+{
 
   // joystick ports
   private static final int intDriver1Port = 0;
@@ -65,23 +43,9 @@ public class Robot extends TimedRobot {
   // joysticks
   private Joystick joyDriver1, joyDriver2;
 
-  // PWM motor ports
-  private static final int motorPortPwm0 = 0;
-  private static final int motorPortPwm1 = 1;
-
-  // PWM motors
-  private SpeedController motorPwm0, motorPwm1;
-
-
-  private VictorSPX victor4, victor5, victor6, victor7;
-
   // drewnote: This will alter all speeds!
   // typically we will set it to half to be safe until we're all set
   public double speedModifier = 0.5;
-
-
-  // air compressor
-  //private Compressor airCompressor0;
 
   // USB cameras
   UsbCamera camFront, camBack;
@@ -90,11 +54,6 @@ public class Robot extends TimedRobot {
   // gyro
   private AHRS gyro;
 
-  private Boolean drive_tank = true;
-  private Boolean turning_right = false;
-  private Boolean turning_left = false;
-  private double turning_init_x;
-
   private double yaw;
   private double pitch;
   private double roll;
@@ -102,10 +61,6 @@ public class Robot extends TimedRobot {
   private double velX;
   private double velY;
   private double velZ;
-
-  private Solenoid solen;
-  boolean sol = false;
-
 
   DriveTrain driveTrain;
   CargoArm cargoArm;
@@ -135,35 +90,13 @@ public class Robot extends TimedRobot {
     joyDriver1 = new Joystick(intDriver1Port);
     joyDriver2 = new Joystick(intDriver2Port);
 
-    // init motors: PWM
-    motorPwm0 = new PWMVictorSPX(2);
-    motorPwm1 = new PWMVictorSPX(3);
-    
     driveTrain = new DriveTrain();
     hatchArm = new HatchArm();
     cargoArm = new CargoArm();
 
-    victor4 = new VictorSPX(4);
-    victor5 = new VictorSPX(5);
-    victor6 = new VictorSPX(6);
-    victor7 = new VictorSPX(7);
-
     buttons = new Buttons();
 
     //configgy = new RobotConfigurator();
-
-
-    // solenoids will go in their respective class (CargoArm or HatchArm)
-    // we will likely have the solenoid controlled with two routes
-    // they are controlled from PWM channels 0 and 1, CAN channel 0
-    //solen = new Solenoid(0 /* can channel */, 0 /*PWM channel*/);
-
-    // air compressor
-    // airCompressor0 = new Compressor();
-    // closed loop control: air compressor will automatically kick on when pressure
-    // is too low (<120psi)
-    // drewnote: disabled for now
-    // airCompressor0.setClosedLoopControl(true);
 
     // init gyro
     try
