@@ -64,6 +64,7 @@ public class Robot extends TimedRobot
   DriveTrain driveTrain;
   CargoArm cargoArm;
   HatchArm hatchArm;
+  Ramp ramp;
 
   Buttons driver1, driver2;
 
@@ -92,12 +93,13 @@ public class Robot extends TimedRobot
     // init joysticks
     Joystick[] joysticks = getControllers();
 
-    joyDriver1 = joysticks[0];//new Joystick(intDriver1Port);
-    joyDriver2 = joysticks[1];//new Joystick(intDriver2Port);
+    joyDriver1 = joysticks[0];
+    joyDriver2 = joysticks[1];
 
     driveTrain = new DriveTrain();
     hatchArm = new HatchArm();
     cargoArm = new CargoArm();
+    ramp = new Ramp();
 
     driver1 = new Buttons(joyDriver1);
     driver2 = new Buttons(joyDriver2);
@@ -207,6 +209,13 @@ public class Robot extends TimedRobot
 
     cargoArm.spinBallMotor(d2LeftJoystick * speedModifier);
 
+    // driver1 controls ramp
+    // press start and select together to deploy
+    if(driver1.pressed(driver1.Start) && driver1.pressed(driver1.Select))
+    {
+      ramp.deploy();
+    }
+
     // control hatch arm
     if(driver2.pressed(driver2.A))
     {
@@ -234,19 +243,19 @@ public class Robot extends TimedRobot
       {
         camServForward.setSource(camFront);
         //camServReverse.setSource(camBack);
-    //     camBack.free();
-    //     camFront.close();
-    // camFront = CameraServer.getInstance().startAutomaticCapture(0);
-    // camBack = CameraServer.getInstance().startAutomaticCapture(1);
+        //     camBack.free();
+        //     camFront.close();
+        // camFront = CameraServer.getInstance().startAutomaticCapture(0);
+        // camBack = CameraServer.getInstance().startAutomaticCapture(1);
       }
       else
       {
         camServForward.setSource(camBack);
         //camServReverse.setSource(camFront);
-    //     camBack.close();
-    //     camFront.close();
-    // camFront = CameraServer.getInstance().startAutomaticCapture(1);
-    // camBack = CameraServer.getInstance().startAutomaticCapture(0);
+        //     camBack.close();
+        //     camFront.close();
+        // camFront = CameraServer.getInstance().startAutomaticCapture(1);
+        // camBack = CameraServer.getInstance().startAutomaticCapture(0);
       }
     }
 
