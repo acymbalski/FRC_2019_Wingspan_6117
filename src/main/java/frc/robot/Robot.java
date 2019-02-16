@@ -37,19 +37,18 @@ public class Robot extends TimedRobot
 {
 
   // joystick ports
-  private static final int intDriver1Port = 0;
-  private static final int intDriver2Port = 1;
+  private int joystickPorts = 2;
 
   // joysticks
   private Joystick joyDriver1, joyDriver2;
 
   // drewnote: This will alter all speeds!
   // typically we will set it to half to be safe until we're all set
-  public double speedModifier = 0.5;
+  public double speedModifier = 0.25;
 
   // USB cameras
   UsbCamera camFront, camBack;
-  VideoSink camServ;
+  VideoSink camServForward, camServReverse;
 
   // gyro
   private AHRS gyro;
@@ -66,7 +65,7 @@ public class Robot extends TimedRobot
   CargoArm cargoArm;
   HatchArm hatchArm;
 
-  Buttons buttons;
+  Buttons driver1, driver2;
 
 
   // drewnote: used for debug
@@ -84,17 +83,24 @@ public class Robot extends TimedRobot
     // initialize cameras
     camFront = CameraServer.getInstance().startAutomaticCapture(0);
     camBack = CameraServer.getInstance().startAutomaticCapture(1);
-    camServ = CameraServer.getInstance().getServer();
+    camServForward = CameraServer.getInstance().getServer();
+    camServReverse = CameraServer.getInstance().getServer();
+
+    camServForward.setSource(camFront);
+    //camServReverse.setSource(camBack);
 
     // init joysticks
-    joyDriver1 = new Joystick(intDriver1Port);
-    joyDriver2 = new Joystick(intDriver2Port);
+    Joystick[] joysticks = getControllers();
+
+    joyDriver1 = joysticks[0];//new Joystick(intDriver1Port);
+    joyDriver2 = joysticks[1];//new Joystick(intDriver2Port);
 
     driveTrain = new DriveTrain();
     hatchArm = new HatchArm();
     cargoArm = new CargoArm();
 
-    buttons = new Buttons();
+    driver1 = new Buttons(joyDriver1);
+    driver2 = new Buttons(joyDriver2);
 
     //configgy = new RobotConfigurator();
 
@@ -165,12 +171,16 @@ public class Robot extends TimedRobot
 
     driveTrain.stop();
     System.out.println("Motors stopped.");
+    driveTrain.init();
+    System.out.println("Drive Train encoders zeroed.");
 
     
     updateShuffleboard();
 
     // configgy.discoverMotors();
     // configgy.discoverPneumatics();
+
+    cargoArm.init();
 
     System.out.println("Teleop initialization complete.");
   }
@@ -181,41 +191,77 @@ public class Robot extends TimedRobot
   @Override
   public void teleopPeriodic()
   {
-    // drive robot
-    double leftJoystick = joyDriver1.getRawAxis(buttons.LAxisUD);
-    double rightJoystick = joyDriver1.getRawAxis(buttons.RAxisUD);
 
-    driveTrain.drive(leftJoystick * speedModifier, rightJoystick * speedModifier);
+    // debug for now
+    cargoArm.periodic();
+    driveTrain.periodic();
+
+    // drive robot
+    double d1LeftJoystick = driver1.getAxis(driver1.LAxisUD);
+    double d1RightJoystick = driver1.getAxis(driver1.RAxisUD);
+
+    double d2LeftJoystick = driver2.getAxis(driver2.LAxisUD);
+    double d2RightJoystick = driver2.getAxis(driver2.RAxisUD);
+
+    driveTrain.drive(d1LeftJoystick * speedModifier, d1RightJoystick * speedModifier);
+
+    cargoArm.spinBallMotor(d2LeftJoystick * speedModifier);
 
     // control hatch arm
-    if(joyDriver1.getRawButtonPressed(buttons.A))
+    if(driver2.pressed(driver2.A))
     {
       hatchArm.togglePistons();
     }
 
     // open/close hatch grabber arms
-    if(joyDriver1.getRawButtonPressed(buttons.B))
+    if(driver2.pressed(driver2.B))
     {
       hatchArm.toggleGrabber();
     }
 
+    // extend/de-extend cargo hand
+    if(driver2.pressed(driver2.Start))
+    {
+      cargoArm.toggleHand();
+    }
+
     // flip drive orientation
-    if(joyDriver1.getRawButtonPressed(buttons.Select))
+    if(driver1.pressed(driver1.Select))
     {
       driveTrain.flip_orientation();
+      
+      if(driveTrain.isFacingForward())
+      {
+        camServForward.setSource(camFront);
+        //camServReverse.setSource(camBack);
+    //     camBack.free();
+    //     camFront.close();
+    // camFront = CameraServer.getInstance().startAutomaticCapture(0);
+    // camBack = CameraServer.getInstance().startAutomaticCapture(1);
+      }
+      else
+      {
+        camServForward.setSource(camBack);
+        //camServReverse.setSource(camFront);
+    //     camBack.close();
+    //     camFront.close();
+    // camFront = CameraServer.getInstance().startAutomaticCapture(1);
+    // camBack = CameraServer.getInstance().startAutomaticCapture(0);
+      }
     }
+
 
     // button 7: L2
     // button 8: R2
     // L2 will reverse the finger
     // R2 will rotate it forward
-    if(joyDriver1.getRawButton(buttons.L2))
+    if(driver2.pressed(driver2.L2))
     {
       hatchArm.rotateFinger(-1 * speedModifier);
     }
     else
     {
-      if(joyDriver1.getRawButton(buttons.R2))
+      if(driver2.pressed(driver2.R2))
       {
         hatchArm.rotateFinger(1 * speedModifier);
       }
@@ -230,13 +276,13 @@ public class Robot extends TimedRobot
     // button 6: R1
     // L1 will move the hatch arm one way
     // R1 will move it the other way
-    if(joyDriver1.getRawButton(buttons.L1))
+    if(driver2.pressed(driver2.L1))
     {
       hatchArm.rotateArm(-1 * speedModifier * 0.75);
     }
     else
     {
-      if(joyDriver1.getRawButton(buttons.R1))
+      if(driver2.pressed(driver2.R1))
       {
         hatchArm.rotateArm(1 * speedModifier * 0.75);
       }
@@ -251,13 +297,13 @@ public class Robot extends TimedRobot
     // button 4: y
     // button 1 will move the ball arm one way
     // button 4 will move it the other way
-    if(joyDriver1.getRawButton(buttons.X))
+    if(driver2.pressed(driver2.X))
     {
       cargoArm.rotateArm(-1 * speedModifier);
     }
     else
     {
-      if(joyDriver1.getRawButton(buttons.Y))
+      if(driver2.pressed(driver2.Y))
       {
         cargoArm.rotateArm(1 * speedModifier);
       }
@@ -306,5 +352,39 @@ public class Robot extends TimedRobot
     SmartDashboard.putNumber("Y vel", velY);//gyro.getVelocityY());
     SmartDashboard.putNumber("Z vel", velZ);//gyro.getVelocityZ());
     SmartDashboard.putData(gyro);
+  }
+
+  private Joystick[] getControllers()
+  {
+    Joystick[] joysticks = new Joystick[joystickPorts];
+
+
+    Joystick tmpJoystick;
+    for(int i = 0; i < joystickPorts; i++)
+    {
+      try
+      {
+        tmpJoystick = new Joystick(i);
+
+        if(tmpJoystick.getAxisCount() == 6)
+        {
+          System.out.println("Found 6 axis joystick in port " + i + ".");
+          System.out.println("Setting to driver 1...");
+          joysticks[0] = tmpJoystick;
+        }
+        else
+        {
+          System.out.println("Found 4 axis joystick in port " + i + ".");
+          System.out.println("Setting to driver 2...");
+          joysticks[1] = tmpJoystick;
+        }
+      }
+      catch(Exception e)
+      {
+        System.out.println("No joystick found in port " + i + "...");
+      }
+    }
+
+    return joysticks;
   }
 }
