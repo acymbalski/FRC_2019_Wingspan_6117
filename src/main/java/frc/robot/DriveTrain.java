@@ -11,16 +11,11 @@ public class DriveTrain
     private TalonSRX moTalWhlL, moTalWhlR;
     private VictorSPX moVicWhlL, moVicWhlR;
 
-
-    // set speed limitations
-    // 0.5 = half speed
-    // ...
-    // 1.0 = full speed
-    // etc.
-    private double speedFactor = 0.5;
-
     // so we can flip forwards/backwards driving
     private int orientation;
+
+    private Encoder encLeft, encRight;
+
 
     public DriveTrain()
     {
@@ -40,10 +35,19 @@ public class DriveTrain
         // moTalWhlR.setInverted(true);
         // moVicWhlR.setInverted(false);
 
+        encLeft = new Encoder(moTalWhlL, 1);
+        encRight = new Encoder(moTalWhlR, 0);
+
         orientation = 1;
 
         // stop all motors
         stop();
+    }
+
+    public void init()
+    {
+        encLeft.initQuad();
+        encRight.initQuad();
     }
 
     public void drive(double left_amt, double right_amt)
@@ -51,8 +55,8 @@ public class DriveTrain
         // if driving forward
         if(orientation == 1)
         {
-            set_left_motors(left_amt);// * speedFactor);
-            set_right_motors(right_amt);// * speedFactor);
+            set_left_motors(left_amt);
+            set_right_motors(right_amt);
         }
         // otherwise, if driving backwards, flip the controls
         // (and reverse which joystick controls which motor)
@@ -83,6 +87,14 @@ public class DriveTrain
         moVicWhlR.set(ControlMode.PercentOutput, -amt * orientation);
     }
 
+    public void periodic()
+    {
+        System.out.println("---<DriveTrain>---");
+        System.out.println("Left encoder:  " + encLeft.position());
+        System.out.println("Right encoder: " + encRight.position());
+        System.out.println();
+    }
+
     public void flip_orientation()
     {
         System.out.println("Flipping orientation!");
@@ -93,5 +105,6 @@ public class DriveTrain
     {
         return orientation == 1;
     }
+
 
 }
