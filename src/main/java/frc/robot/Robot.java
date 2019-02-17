@@ -44,7 +44,7 @@ public class Robot extends TimedRobot
 
   // drewnote: This will alter all speeds!
   // typically we will set it to half to be safe until we're all set
-  public double speedModifier = 0.25;
+  public double speedModifier = 0.5;
 
   // USB cameras
   UsbCamera camFront, camBack;
@@ -207,7 +207,10 @@ public class Robot extends TimedRobot
 
     driveTrain.drive(d1LeftJoystick * speedModifier, d1RightJoystick * speedModifier);
 
-    cargoArm.spinBallMotor(d2LeftJoystick * speedModifier);
+    // up is in
+    // down is out
+    // (when it's not negated)
+    cargoArm.spinBallMotor(d2LeftJoystick);
 
     // driver1 controls ramp
     // press start and select together to deploy
@@ -215,6 +218,10 @@ public class Robot extends TimedRobot
     {
       ramp.deploy();
     }
+
+    // driver 1 can double speed by holding A
+    driveTrain.fastSpeed = driver1.down(driver1.L2);
+
 
     // control hatch arm
     if(driver2.pressed(driver2.A))
@@ -264,13 +271,13 @@ public class Robot extends TimedRobot
     // button 8: R2
     // L2 will reverse the finger
     // R2 will rotate it forward
-    if(driver2.pressed(driver2.L2))
+    if(driver2.down(driver2.L2))
     {
       hatchArm.rotateFinger(-1 * speedModifier);
     }
     else
     {
-      if(driver2.pressed(driver2.R2))
+      if(driver2.down(driver2.R2))
       {
         hatchArm.rotateFinger(1 * speedModifier);
       }
@@ -285,13 +292,13 @@ public class Robot extends TimedRobot
     // button 6: R1
     // L1 will move the hatch arm one way
     // R1 will move it the other way
-    if(driver2.pressed(driver2.L1))
+    if(driver2.down(driver2.L1))
     {
       hatchArm.rotateArm(-1 * speedModifier * 0.75);
     }
     else
     {
-      if(driver2.pressed(driver2.R1))
+      if(driver2.down(driver2.R1))
       {
         hatchArm.rotateArm(1 * speedModifier * 0.75);
       }
@@ -306,13 +313,13 @@ public class Robot extends TimedRobot
     // button 4: y
     // button 1 will move the ball arm one way
     // button 4 will move it the other way
-    if(driver2.pressed(driver2.X))
+    if(driver2.down(driver2.X))
     {
       cargoArm.rotateArm(-1 * speedModifier);
     }
     else
     {
-      if(driver2.pressed(driver2.Y))
+      if(driver2.down(driver2.Y))
       {
         cargoArm.rotateArm(1 * speedModifier);
       }
