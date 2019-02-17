@@ -108,4 +108,9 @@ public class Buttons
             return 0;
         }
     }
+
+    public Boolean down(int btn)
+    {
+        return joystick.getRawButton(btn);
+    }
 }
