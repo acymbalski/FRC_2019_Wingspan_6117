@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class CargoArm
@@ -14,7 +13,7 @@ public class CargoArm
 
     VictorSPX moVicBallRoll;
 
-    Encoder encVicBallRoll;
+    Encoder encBallRoll;
 
     Solenoid solHandExtend;
     Solenoid solArmBrake;
@@ -24,13 +23,10 @@ public class CargoArm
     public CargoArm()
     {
         moTalBallArm = new TalonSRX(2);
+        
 
         moVicBallRoll = new VictorSPX(4);
-        encVicBallRoll = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
-        encVicBallRoll.setMaxPeriod(1);
-        encVicBallRoll.setMinRate(10);
-        encVicBallRoll.setDistancePerPulse(5);
-        encVicBallRoll.setSamplesToAverage(7);
+        encBallRoll = new Encoder(moTalBallArm, 2);
 
 
         solHandExtend = new Solenoid(2);
@@ -40,13 +36,17 @@ public class CargoArm
 
     public void init()
     {
-        encVicBallRoll.reset();
-        moTalBallArm.setSelectedSensorPosition(0);
+        //encVicBallRoll.reset();
+        encBallRoll.initQuad();
+        System.out.println("Ball roller zeroed.");
+        System.out.println("Ball roller value: " + encBallRoll.position());
     }
 
     public void periodic()
     {
-        
+        System.out.println("---<CargoArm>---");
+        System.out.println("Ball roller:  " + encBallRoll.position());
+        System.out.println();
     }
 
     public void rotateArm(double amt)
@@ -84,5 +84,11 @@ public class CargoArm
         handIsExtended = !handIsExtended;
 
         solHandExtend.set(handIsExtended);
+    }
+
+    public void setArmDown()
+    {
+        // set hand to some known position that means "down"
+        
     }
 }

@@ -21,9 +21,7 @@ public class Encoder
 
         initQuad();
 
-        moTal.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 1, timeoutMs);
-
-        moTal.setSelectedSensorPosition(0);
+        moTal.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, timeoutMs);
         
     }
 
@@ -63,7 +61,9 @@ public class Encoder
 		pulseWidth = pulseWidth & 0xFFF;
 
 		/* Update Quadrature position */
-		moTal.getSensorCollection().setQuadraturePosition(pulseWidth, timeoutMs);
+        //moTal.getSensorCollection().setQuadraturePosition(pulseWidth, timeoutMs);
+        moTal.setSelectedSensorPosition(0, 0, timeoutMs);
+        //moTal.getSensorCollection().set
     }
 
     /**
@@ -83,7 +83,7 @@ public class Encoder
 
     public double position()
     {
-        return deg(moTal.getSensorCollection().getPulseWidthPosition());
+        return moTal.getSelectedSensorPosition();
     }
 
 }
