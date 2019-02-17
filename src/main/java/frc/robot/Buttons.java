@@ -82,6 +82,7 @@ public class Buttons
         {
             if(isXInput && (btn == L2 || btn == R2))
             {
+                System.out.println("BTN " + btn + " val: " + joystick.getRawAxis(btn));
                 return joystick.getRawAxis(btn) > 0.75;
             }
             else
