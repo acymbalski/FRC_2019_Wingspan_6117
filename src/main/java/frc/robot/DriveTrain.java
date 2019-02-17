@@ -78,13 +78,13 @@ public class DriveTrain
         System.out.println("Motors stopped.");
     }
 
-    private void set_left_motors(double amt)
+    public void set_left_motors(double amt)
     {
         moTalWhlL.set(ControlMode.PercentOutput, amt * orientation * (fastSpeed ? 2 : 1));
         moVicWhlL.set(ControlMode.PercentOutput, amt * orientation * (fastSpeed ? 2 : 1));
     }
 
-    private void set_right_motors(double amt)
+    public void set_right_motors(double amt)
     {
         moTalWhlR.set(ControlMode.PercentOutput, -amt * orientation * (fastSpeed ? 2 : 1));
         moVicWhlR.set(ControlMode.PercentOutput, -amt * orientation * (fastSpeed ? 2 : 1));
