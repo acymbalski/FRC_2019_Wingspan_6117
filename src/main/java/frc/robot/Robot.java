@@ -189,11 +189,6 @@ public class Robot extends TimedRobot
 
     driveTrain.drive(d1LeftJoystick * speedModifier, d1RightJoystick * speedModifier);
 
-    // up is out
-    // down is in
-    // (when it's negated)
-    cargoArm.spinBallMotor(d2LeftJoystick);
-
     // driver1 controls ramp
     // press start and select together to deploy
     if(driver1.pressed(driver1.Start) && driver1.pressed(driver1.Select))
@@ -229,7 +224,14 @@ public class Robot extends TimedRobot
       }
     }
 
+
     // -------------------- DRIVER 2
+
+
+    // up is out
+    // down is in
+    // (when it's negated)
+    cargoArm.spinBallMotor(Math.round(d2LeftJoystick));
 
     // control hatch arm
     if(driver2.pressed(driver2.A))

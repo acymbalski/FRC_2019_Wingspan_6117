@@ -79,7 +79,7 @@ public class CargoArm
 
     public void spinBallMotor(double amt)
     {
-        moVicBallRoll.set(ControlMode.PercentOutput, -amt);
+        moVicBallRoll.set(ControlMode.PercentOutput, amt);
     }
     
     public void toggleHand()
