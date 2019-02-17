@@ -44,9 +44,12 @@ public class CargoArm
 
     public void periodic()
     {
-        System.out.println("---<CargoArm>---");
-        System.out.println("Ball roller:  " + encBallRoll.position());
-        System.out.println();
+        if(Constants.DEBUG)
+        {
+            System.out.println("---<CargoArm>---");
+            System.out.println("Ball roller:  " + encBallRoll.position());
+            System.out.println();
+        }
     }
 
     public void rotateArm(double amt)
@@ -76,7 +79,7 @@ public class CargoArm
 
     public void spinBallMotor(double amt)
     {
-        moVicBallRoll.set(ControlMode.PercentOutput, amt);
+        moVicBallRoll.set(ControlMode.PercentOutput, -amt);
     }
     
     public void toggleHand()

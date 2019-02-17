@@ -23,8 +23,8 @@ import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.cameraserver.CameraServer;
 
 // gyro
-import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.I2C;
+// import com.kauailabs.navx.frc.AHRS;
+// import edu.wpi.first.wpilibj.I2C;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -39,9 +39,6 @@ public class Robot extends TimedRobot
   // joystick ports
   private int joystickPorts = 2;
 
-  // joysticks
-  private Joystick joyDriver1, joyDriver2;
-
   // drewnote: This will alter all speeds!
   // typically we will set it to half to be safe until we're all set
   public double speedModifier = 0.5;
@@ -51,15 +48,15 @@ public class Robot extends TimedRobot
   VideoSink camServForward, camServReverse;
 
   // gyro
-  private AHRS gyro;
+  // private AHRS gyro;
 
-  private double yaw;
-  private double pitch;
-  private double roll;
+  // private double yaw;
+  // private double pitch;
+  // private double roll;
 
-  private double velX;
-  private double velY;
-  private double velZ;
+  // private double velX;
+  // private double velY;
+  // private double velZ;
 
   DriveTrain driveTrain;
   CargoArm cargoArm;
@@ -67,11 +64,6 @@ public class Robot extends TimedRobot
   Ramp ramp;
 
   Buttons driver1, driver2;
-
-
-  // drewnote: used for debug
-  // has a method to spin all motors individually to check who is who
-  //RobotConfigurator configgy;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -93,30 +85,25 @@ public class Robot extends TimedRobot
     // init joysticks
     Joystick[] joysticks = getControllers();
 
-    joyDriver1 = joysticks[0];
-    joyDriver2 = joysticks[1];
-
     driveTrain = new DriveTrain();
     hatchArm = new HatchArm();
     cargoArm = new CargoArm();
     ramp = new Ramp();
 
-    driver1 = new Buttons(joyDriver1);
-    driver2 = new Buttons(joyDriver2);
-
-    //configgy = new RobotConfigurator();
+    driver1 = new Buttons(joysticks[0]);
+    driver2 = new Buttons(joysticks[1]);
 
     // init gyro
-    try
-    {
-      gyro = new AHRS(I2C.Port.kOnboard);
-    }
-    catch (RuntimeException ex)
-    {
-      // DriverStation.reportError("Error instantiating navX-MXP: " + ex.getMessage(),
-      // true);
-      System.out.println("Error initializing gyro!");
-    }
+    // try
+    // {
+    //   gyro = new AHRS(I2C.Port.kOnboard);
+    // }
+    // catch (RuntimeException ex)
+    // {
+    //   // DriverStation.reportError("Error instantiating navX-MXP: " + ex.getMessage(),
+    //   // true);
+    //   System.out.println("Error initializing gyro!");
+    // }
 
     // // update gyro info on smart dashboard
     // SmartDashboard.putNumber("X angle", gyro.getYaw() + 180);
@@ -130,12 +117,6 @@ public class Robot extends TimedRobot
     // SmartDashboard.putData(gyro);
     updateVars();
     updateShuffleboard();
-
-
-    System.out.println("X channel: " + joyDriver1.getXChannel());
-    System.out.println("Y channel: " + joyDriver1.getYChannel());
-    
-    System.out.println(joyDriver1.getAxisCount());
 
     System.out.println("RoboRIO initialization complete.");
   }
@@ -179,9 +160,6 @@ public class Robot extends TimedRobot
     
     updateShuffleboard();
 
-    // configgy.discoverMotors();
-    // configgy.discoverPneumatics();
-
     cargoArm.init();
 
     System.out.println("Teleop initialization complete.");
@@ -197,7 +175,7 @@ public class Robot extends TimedRobot
     // debug for now
     cargoArm.periodic();
     driveTrain.periodic();
-
+ 
     // drive robot
     double d1LeftJoystick = driver1.getAxis(driver1.LAxisUD);
     double d1RightJoystick = driver1.getAxis(driver1.RAxisUD);
@@ -205,11 +183,15 @@ public class Robot extends TimedRobot
     double d2LeftJoystick = driver2.getAxis(driver2.LAxisUD);
     double d2RightJoystick = driver2.getAxis(driver2.RAxisUD);
 
+
+    // -------------------- DRIVER 1
+
+
     driveTrain.drive(d1LeftJoystick * speedModifier, d1RightJoystick * speedModifier);
 
-    // up is in
-    // down is out
-    // (when it's not negated)
+    // up is out
+    // down is in
+    // (when it's negated)
     cargoArm.spinBallMotor(d2LeftJoystick);
 
     // driver1 controls ramp
@@ -219,27 +201,8 @@ public class Robot extends TimedRobot
       ramp.deploy();
     }
 
-    // driver 1 can double speed by holding A
+    // driver 1 can double speed by holding L2
     driveTrain.fastSpeed = driver1.down(driver1.L2);
-
-
-    // control hatch arm
-    if(driver2.pressed(driver2.A))
-    {
-      hatchArm.togglePistons();
-    }
-
-    // open/close hatch grabber arms
-    if(driver2.pressed(driver2.B))
-    {
-      hatchArm.toggleGrabber();
-    }
-
-    // extend/de-extend cargo hand
-    if(driver2.pressed(driver2.Start))
-    {
-      cargoArm.toggleHand();
-    }
 
     // flip drive orientation
     if(driver1.pressed(driver1.Select))
@@ -266,6 +229,25 @@ public class Robot extends TimedRobot
       }
     }
 
+    // -------------------- DRIVER 2
+
+    // control hatch arm
+    if(driver2.pressed(driver2.A))
+    {
+      hatchArm.togglePistons();
+    }
+
+    // open/close hatch grabber arms
+    if(driver2.pressed(driver2.B))
+    {
+      hatchArm.toggleGrabber();
+    }
+
+    // extend/de-extend cargo hand
+    if(driver2.pressed(driver2.Start))
+    {
+      cargoArm.toggleHand();
+    }
 
     // button 7: L2
     // button 8: R2
@@ -342,18 +324,18 @@ public class Robot extends TimedRobot
 
   private void updateVars()
   {
-    yaw = gyro.getYaw();
-    pitch = gyro.getPitch();
-    roll = gyro.getRoll();
+    // yaw = gyro.getYaw();
+    // pitch = gyro.getPitch();
+    // roll = gyro.getRoll();
 
-    velX = gyro.getVelocityX();
-    velY = gyro.getVelocityY();
-    velZ = gyro.getVelocityZ();
+    // velX = gyro.getVelocityX();
+    // velY = gyro.getVelocityY();
+    // velZ = gyro.getVelocityZ();
 
-    // adjust for range 0 - 360
-    yaw += 180;
-    pitch += 180;
-    roll += 180;
+    // // adjust for range 0 - 360
+    // yaw += 180;
+    // pitch += 180;
+    // roll += 180;
 
   }
 
@@ -361,13 +343,13 @@ public class Robot extends TimedRobot
   {
 
     // update gyro info on smart dashboard
-    SmartDashboard.putNumber("X angle", yaw);//gyro.getYaw() + 180);
-    SmartDashboard.putNumber("Y angle", pitch);//gyro.getPitch() + 180);
-    SmartDashboard.putNumber("Z angle", roll);//gyro.getRoll() + 180);
-    SmartDashboard.putNumber("X vel", velX);//gyro.getVelocityX());
-    SmartDashboard.putNumber("Y vel", velY);//gyro.getVelocityY());
-    SmartDashboard.putNumber("Z vel", velZ);//gyro.getVelocityZ());
-    SmartDashboard.putData(gyro);
+    // SmartDashboard.putNumber("X angle", yaw);//gyro.getYaw() + 180);
+    // SmartDashboard.putNumber("Y angle", pitch);//gyro.getPitch() + 180);
+    // SmartDashboard.putNumber("Z angle", roll);//gyro.getRoll() + 180);
+    // SmartDashboard.putNumber("X vel", velX);//gyro.getVelocityX());
+    // SmartDashboard.putNumber("Y vel", velY);//gyro.getVelocityY());
+    // SmartDashboard.putNumber("Z vel", velZ);//gyro.getVelocityZ());
+    // SmartDashboard.putData(gyro);
   }
 
   private Joystick[] getControllers()

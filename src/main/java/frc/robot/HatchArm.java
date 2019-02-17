@@ -59,16 +59,6 @@ public class HatchArm
 
     }
 
-    public void lowerArm()
-    {
-
-    }
-
-    public void closeArm()
-    {
-
-    }
-
     public void openGrabber()
     {
         solHatchClose.set(false);
@@ -113,47 +103,51 @@ public class HatchArm
 
     public void pushPistons()
     {
-        solHatchRetract.set(false);
-        solHatchPush.set(true);
-
-        pistonsOut = true;
     }
 
     public void retractPistons()
     {
-        solHatchPush.set(false);
-        solHatchRetract.set(true);
-        
-        pistonsOut = false;
     }
 
     public void togglePistons()
     {
-        if(pistonsOut)
-        {
-            retractPistons();
-        }
-        else
-        {
-            pushPistons();
-        }
+        
+        solHatchPush.set(!pistonsOut);
+        solHatchRetract.set(pistonsOut);
+
+        pistonsOut = !pistonsOut;
+
+        // if(pistonsOut)
+        // {
+        //     solHatchPush.set(!pistonsOut);
+        //     solHatchRetract.set(pistonsOut);
+            
+        //     pistonsOut = !pistonsOut;
+        // }
+        // else
+        // {
+        //     //pushPistons();
+            
+        // }
     }
 
+    /**
+	 * Rotates the hatch panel holding finger.
+	 * @param amt The speed to rotate with
+	 */
     public void rotateFinger(double amt)
     {
         moVicHatFin.set(ControlMode.PercentOutput, amt);
     }
 
+    
+    /**
+	 * Rotates the hatch panel grabbing arm.
+	 * @param amt The speed to rotate with
+	 */
     public void rotateArm(double amt)
     {
         moVicHatArm.set(ControlMode.PercentOutput, amt);
     }
-    
-    /**
-	 * Pushes the hatch panel off.
-	 * @param mode The output mode to apply.
-	 *
-	 * @param outputValue The setpoint value, as described above.
-	 */
 
 }

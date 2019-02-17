@@ -17,7 +17,7 @@ public class DriveTrain
     private Encoder encLeft, encRight;
 
     public boolean fastSpeed = false;
-
+    
     public DriveTrain()
     {
         
@@ -28,15 +28,11 @@ public class DriveTrain
         moTalWhlL = new TalonSRX(1);
         moVicWhlL = new VictorSPX(3);
         moTalWhlL.configFactoryDefault();
-        moTalWhlL.setInverted(false);
-        moVicWhlL.setInverted(false);
 
         // right motors
         moTalWhlR = new TalonSRX(0);
         moVicWhlR = new VictorSPX(7);
         moTalWhlR.configFactoryDefault();
-        // moTalWhlR.setInverted(true);
-        // moVicWhlR.setInverted(false);
 
         encLeft = new Encoder(moTalWhlL, 1);
         encRight = new Encoder(moTalWhlR, 0);
@@ -96,10 +92,13 @@ public class DriveTrain
 
     public void periodic()
     {
-        System.out.println("---<DriveTrain>---");
-        System.out.println("Left encoder:  " + encLeft.position());
-        System.out.println("Right encoder: " + encRight.position());
-        System.out.println();
+        if(Constants.DEBUG)
+        {
+            System.out.println("---<DriveTrain>---");
+            System.out.println("Left encoder:  " + encLeft.position());
+            System.out.println("Right encoder: " + encRight.position());
+            System.out.println();
+        }
     }
 
     public void flip_orientation()

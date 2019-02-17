@@ -72,7 +72,7 @@ public class Encoder
      */
     private double deg(int units) {
         double deg = units * 360.0 / 4096.0;
-
+ 
         /* truncate to 0.1 res */
         deg *= 10;
         deg = (int) deg;
