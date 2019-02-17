@@ -16,6 +16,7 @@ public class DriveTrain
 
     private Encoder encLeft, encRight;
 
+    public boolean fastSpeed = false;
 
     public DriveTrain()
     {
@@ -26,12 +27,14 @@ public class DriveTrain
         // (must be inverted)
         moTalWhlL = new TalonSRX(1);
         moVicWhlL = new VictorSPX(3);
+        moTalWhlL.configFactoryDefault();
         moTalWhlL.setInverted(false);
         moVicWhlL.setInverted(false);
 
         // right motors
         moTalWhlR = new TalonSRX(0);
         moVicWhlR = new VictorSPX(7);
+        moTalWhlR.configFactoryDefault();
         // moTalWhlR.setInverted(true);
         // moVicWhlR.setInverted(false);
 
@@ -48,6 +51,10 @@ public class DriveTrain
     {
         encLeft.initQuad();
         encRight.initQuad();
+        
+        System.out.println("Left and right wheels zeroed.");
+        System.out.println("Left wheel value value: " + encLeft.position());
+        System.out.println("Right wheel value value: " + encRight.position());
     }
 
     public void drive(double left_amt, double right_amt)
@@ -77,14 +84,14 @@ public class DriveTrain
 
     private void set_left_motors(double amt)
     {
-        moTalWhlL.set(ControlMode.PercentOutput, amt * orientation);
-        moVicWhlL.set(ControlMode.PercentOutput, amt * orientation);
+        moTalWhlL.set(ControlMode.PercentOutput, amt * orientation * (fastSpeed ? 2 : 1));
+        moVicWhlL.set(ControlMode.PercentOutput, amt * orientation * (fastSpeed ? 2 : 1));
     }
 
     private void set_right_motors(double amt)
     {
-        moTalWhlR.set(ControlMode.PercentOutput, -amt * orientation);
-        moVicWhlR.set(ControlMode.PercentOutput, -amt * orientation);
+        moTalWhlR.set(ControlMode.PercentOutput, -amt * orientation * (fastSpeed ? 2 : 1));
+        moVicWhlR.set(ControlMode.PercentOutput, -amt * orientation * (fastSpeed ? 2 : 1));
     }
 
     public void periodic()
@@ -105,6 +112,5 @@ public class DriveTrain
     {
         return orientation == 1;
     }
-
 
 }
