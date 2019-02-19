@@ -131,6 +131,7 @@ public class Robot extends TimedRobot
   {
     System.out.println("Initializing autonomous mode...");
 
+    // zero arm encoder only in autonomous
     cargoArm.zeroEncoder();
 
     commonInit();
