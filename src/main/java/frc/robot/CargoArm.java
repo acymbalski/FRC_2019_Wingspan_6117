@@ -70,7 +70,6 @@ public class CargoArm
     public void init()
     {
         //encVicBallRoll.reset();
-        encCargoArm.initQuad();
         System.out.println("Ball roller zeroed.");
         System.out.println("Ball roller value: " + encCargoArm.position());
 
@@ -238,5 +237,10 @@ else if(armLockEnabled)
             armPositionTarget = encCargoArm.position();
             System.out.println("Locking cargo arm at: " + armPositionTarget);
         }
+    }
+
+    public void zeroEncoder()
+    {
+        encCargoArm.initQuad();
     }
 }

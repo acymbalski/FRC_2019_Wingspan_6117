@@ -65,6 +65,8 @@ public class Robot extends TimedRobot
 
   Buttons driver1, driver2;
 
+  Boolean initted = false;
+
   /**
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
@@ -129,7 +131,9 @@ public class Robot extends TimedRobot
   {
     System.out.println("Initializing autonomous mode...");
 
-    driveTrain.stop();
+    cargoArm.zeroEncoder();
+
+    commonInit();
 
     System.out.println("Autonomous initialization complete.");
   }
@@ -140,7 +144,7 @@ public class Robot extends TimedRobot
   @Override
   public void autonomousPeriodic()
   {
-
+    commonPeriodic();
   }
 
   /**
@@ -151,16 +155,8 @@ public class Robot extends TimedRobot
   {
     System.out.println("Initializing teleop mode...");
 
+    commonInit();
 
-    driveTrain.stop();
-    System.out.println("Motors stopped.");
-    driveTrain.init();
-    System.out.println("Drive Train encoders zeroed.");
-
-    
-    updateShuffleboard();
-
-    cargoArm.init();
 
     System.out.println("Teleop initialization complete.");
   }
@@ -170,6 +166,121 @@ public class Robot extends TimedRobot
    */
   @Override
   public void teleopPeriodic()
+  {
+    commonPeriodic();
+  }
+
+  /**
+   * This function is called periodically during test mode.
+   */
+  @Override
+  public void testPeriodic()
+  {
+
+  }
+
+  private void updateVars()
+  {
+    // yaw = gyro.getYaw();
+    // pitch = gyro.getPitch();
+    // roll = gyro.getRoll();
+
+    // velX = gyro.getVelocityX();
+    // velY = gyro.getVelocityY();
+    // velZ = gyro.getVelocityZ();
+
+    // // adjust for range 0 - 360
+    // yaw += 180;
+    // pitch += 180;
+    // roll += 180;
+
+  }
+
+  private void updateShuffleboard()
+  {
+
+    // update gyro info on smart dashboard
+    // SmartDashboard.putNumber("X angle", yaw);//gyro.getYaw() + 180);
+    // SmartDashboard.putNumber("Y angle", pitch);//gyro.getPitch() + 180);
+    // SmartDashboard.putNumber("Z angle", roll);//gyro.getRoll() + 180);
+    // SmartDashboard.putNumber("X vel", velX);//gyro.getVelocityX());
+    // SmartDashboard.putNumber("Y vel", velY);//gyro.getVelocityY());
+    // SmartDashboard.putNumber("Z vel", velZ);//gyro.getVelocityZ());
+    // SmartDashboard.putData(gyro);
+  }
+
+  private Joystick[] getControllers()
+  {
+    Joystick[] joysticks = new Joystick[joystickPorts];
+
+
+    Joystick tmpJoystick;
+    for(int i = 0; i < joystickPorts; i++)
+    {
+      try
+      {
+        tmpJoystick = new Joystick(i);
+
+        if(tmpJoystick.getAxisCount() == 6)
+        {
+          System.out.println("Found 6 axis joystick in port " + i + ".");
+          System.out.println("Setting to driver 1...");
+          joysticks[0] = tmpJoystick;
+        }
+        else
+        {
+          System.out.println("Found 4 axis joystick in port " + i + ".");
+          System.out.println("Setting to driver 2...");
+          joysticks[1] = tmpJoystick;
+        }
+      }
+      catch(Exception e)
+      {
+        System.out.println("No joystick found in port " + i + "...");
+      }
+    }
+
+    return joysticks;
+  }
+
+  @Override
+  public void disabledInit()
+  {
+    initted = false;
+  }
+
+  public void commonInit()
+  {
+    if(!initted)
+    {
+
+      driveTrain.stop();
+      System.out.println("Motors stopped.");
+      driveTrain.init();
+      System.out.println("Drive Train encoders zeroed.");
+  
+      
+      updateShuffleboard();
+  
+      cargoArm.init();
+  
+      // check controllers - do they exist?
+      if(driver1.joystick == null || driver2.joystick == null)
+      {
+        // init joysticks
+        Joystick[] joysticks = getControllers();
+  
+        driver1 = new Buttons(joysticks[0]);
+        driver2 = new Buttons(joysticks[1]);
+      }
+    }
+    else
+    {
+      System.out.println("Not re-initializing!");
+    }
+  }
+
+  public void commonPeriodic()
   {
 
     // debug for now
@@ -353,78 +464,5 @@ public class Robot extends TimedRobot
       cargoArm.setArmLow();
     }
 
-  }
-
-  /**
-   * This function is called periodically during test mode.
-   */
-  @Override
-  public void testPeriodic()
-  {
-
-  }
-
-  private void updateVars()
-  {
-    // yaw = gyro.getYaw();
-    // pitch = gyro.getPitch();
-    // roll = gyro.getRoll();
-
-    // velX = gyro.getVelocityX();
-    // velY = gyro.getVelocityY();
-    // velZ = gyro.getVelocityZ();
-
-    // // adjust for range 0 - 360
-    // yaw += 180;
-    // pitch += 180;
-    // roll += 180;
-
-  }
-
-  private void updateShuffleboard()
-  {
-
-    // update gyro info on smart dashboard
-    // SmartDashboard.putNumber("X angle", yaw);//gyro.getYaw() + 180);
-    // SmartDashboard.putNumber("Y angle", pitch);//gyro.getPitch() + 180);
-    // SmartDashboard.putNumber("Z angle", roll);//gyro.getRoll() + 180);
-    // SmartDashboard.putNumber("X vel", velX);//gyro.getVelocityX());
-    // SmartDashboard.putNumber("Y vel", velY);//gyro.getVelocityY());
-    // SmartDashboard.putNumber("Z vel", velZ);//gyro.getVelocityZ());
-    // SmartDashboard.putData(gyro);
-  }
-
-  private Joystick[] getControllers()
-  {
-    Joystick[] joysticks = new Joystick[joystickPorts];
-
-
-    Joystick tmpJoystick;
-    for(int i = 0; i < joystickPorts; i++)
-    {
-      try
-      {
-        tmpJoystick = new Joystick(i);
-
-        if(tmpJoystick.getAxisCount() == 6)
-        {
-          System.out.println("Found 6 axis joystick in port " + i + ".");
-          System.out.println("Setting to driver 1...");
-          joysticks[0] = tmpJoystick;
-        }
-        else
-        {
-          System.out.println("Found 4 axis joystick in port " + i + ".");
-          System.out.println("Setting to driver 2...");
-          joysticks[1] = tmpJoystick;
-        }
-      }
-      catch(Exception e)
-      {
-        System.out.println("No joystick found in port " + i + "...");
-      }
-    }
-
-    return joysticks;
   }
 }
