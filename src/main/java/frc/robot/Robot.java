@@ -197,7 +197,21 @@ public class Robot extends TimedRobot
     }
 
     // driver 1 can double speed by holding L2
-    driveTrain.fastSpeed = driver1.down(driver1.L2);
+    //driveTrain.fastSpeed = driver1.down(driver1.L2);
+    if(driver1.pressed(driver1.L2))
+    {
+      driveTrain.fastSpeed = !driveTrain.fastSpeed;
+      System.out.println("Fast speed toggled to: " + driveTrain.fastSpeed);
+    }
+
+    if(driver1.down(driver1.L1))
+    {
+      driveTrain.set_right_motors(speedModifier);
+    }
+    if(driver1.down(driver1.R1))
+    {
+      driveTrain.set_left_motors(speedModifier);
+    }
 
     // flip drive orientation
     if(driver1.pressed(driver1.Select))
