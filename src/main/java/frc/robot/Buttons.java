@@ -4,15 +4,6 @@ import edu.wpi.first.wpilibj.Joystick;
 
 // this is to simplify button press mappings
 
-// 2-11-2019 I think the right way to make sure the controls are mapped correctly
-// is to utilize the XInput switch on the back of ONE the controllers
-// b/c it will add extra axes by changing L2/R2 from buttons to axes
-// so if we check a controller's axis count or button count... we'll know
-// TODO
-
-// this class should maybe also handle the buttonPress stuff too
-// TODO
-
 public class Buttons
 {
 
