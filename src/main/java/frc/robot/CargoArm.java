@@ -13,7 +13,7 @@ public class CargoArm
 
     VictorSPX moVicBallRoll;
 
-    Encoder encBallRoll;
+    Encoder encCargoArm;
 
     Solenoid solHandExtend;
     Solenoid solArmBrake;
@@ -31,13 +31,17 @@ public class CargoArm
 
     double armPosRange;
 
+    double requestedMove = 0;
+
+    Boolean armLockEnabled = true;
+
     public CargoArm()
     {
         moTalBallArm = new TalonSRX(2);
         
 
         moVicBallRoll = new VictorSPX(4);
-        encBallRoll = new Encoder(moTalBallArm, 2);
+        encCargoArm = new Encoder(moTalBallArm, 2);
 
 
         solHandExtend = new Solenoid(2);
@@ -46,9 +50,9 @@ public class CargoArm
         armPositions = new double[4];
 
         armPositions[0] = 0;
-        armPositions[1] = -5000;
-        armPositions[2] = -5500;
-        armPositions[3] = -6600;
+        armPositions[1] = -2835;
+        armPositions[2] = -3880;
+        armPositions[3] = -6450;
 
 
         // get max (abs) value for the range of our arm movement
@@ -66,9 +70,9 @@ public class CargoArm
     public void init()
     {
         //encVicBallRoll.reset();
-        encBallRoll.initQuad();
+        encCargoArm.initQuad();
         System.out.println("Ball roller zeroed.");
-        System.out.println("Ball roller value: " + encBallRoll.position());
+        System.out.println("Ball roller value: " + encCargoArm.position());
 
         armPositionTarget = 0;
     }
@@ -77,32 +81,69 @@ public class CargoArm
     {
         if(Constants.DEBUG)
         {
-            System.out.println("---<CargoArm>---");
-            System.out.println("Ball roller:  " + encBallRoll.position());
-            System.out.println();
+            // System.out.println("---<CargoArm>---");
+            // System.out.println("Ball roller:  " + encBallRoll.position());
+            // System.out.println();
         }
+        
+
+if(requestedMove != 0)
+{
+
+    rotateArm(requestedMove);
+    
+    armPositionTarget = encCargoArm.position();
+}
+else if(armLockEnabled)
+{
 
         // check for cargo arm position
-        double curArmPos = encBallRoll.position();
+        double curArmPos = encCargoArm.position();
 
         double distToTarget = curArmPos - armPositionTarget;
 
-        double amtToMove = -1 * Math.signum(distToTarget) * (1 - (curArmPos / armPosRange));
+        //double amtToMove = Math.signum(distToTarget) * (1 - ((0.5) * curArmPos / armPosRange));
+        double amtToMove = -0.25;
 
-        System.out.println("Moving cargo arm by " + amtToMove);
+        if(distToTarget < 0)
+        {
+            amtToMove *= -1;
+        }
+        if(Math.abs(distToTarget) > 1000)// && Math.signum())
+        {
+            amtToMove *= 2.5;
+        }
+
+        // System.out.println("Moving cargo arm by " + amtToMove);
+        // System.out.println("Distance to move: " + distToTarget);
+        // System.out.println("Current position: " + curArmPos);
+        // System.out.println("---");
 
         // the encoder is only so accurate - even manually putting it at the zeroed position
         // we can read a value from -20 to about +20.
         // so let's not move the arm if we're "close enough" since we may be there already
-        if(distToTarget > 50 || distToTarget < -50)
+        if((curArmPos < -100) || (curArmPos > -100 && Math.signum(amtToMove) < 0) && (distToTarget > 25 || distToTarget < -25))
         {
             // move by the percentage of the way there we are
             // ex. if we are at 0 and we need to be 100% of the way there, move at (100 - 0)% speed
             // ex. if we are at 250 and we need to be at enc 500, move at (100 - 50)% speed...?
             // and multiply by the sign of the distance i think.
-            moTalBallArm.set(ControlMode.PercentOutput, amtToMove);
+
+            // compensate for gravity by moving 2/3s as much downward than upward
+            if(curArmPos < -250 && Math.signum(amtToMove) < 0)
+            {
+                amtToMove *= 0.67;
+            }
+
+            rotateArm(amtToMove);
+        }
+        else{
+            rotateArm(0);
         }
     }
+
+    requestedMove = 0;
+}
 
     public void rotateArm(double amt)
     {
@@ -115,8 +156,20 @@ public class CargoArm
         else
         {
             moTalBallArm.set(ControlMode.PercentOutput, amt);
+
+            if(!solArmBrake.get())
+            {
+                System.out.println("Engaging brake.");
+            }
+
             solArmBrake.set(true);
         }
+    }
+
+    public void requestMove(double amt)
+    {
+        requestedMove = amt;
+
     }
 
     public void ballPull(double amt)
@@ -173,6 +226,17 @@ public class CargoArm
 
     public double currentPosition()
     {
-        return encBallRoll.position();
+        return encCargoArm.position();
+    }
+
+    public void toggleArmLock()
+    {
+        armLockEnabled = !armLockEnabled;
+        System.out.println("Cargo arm lock set to: " + armLockEnabled);
+        if(armLockEnabled)
+        {
+            armPositionTarget = encCargoArm.position();
+            System.out.println("Locking cargo arm at: " + armPositionTarget);
+        }
     }
 }

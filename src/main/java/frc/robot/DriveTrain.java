@@ -94,10 +94,10 @@ public class DriveTrain
     {
         if(Constants.DEBUG)
         {
-            System.out.println("---<DriveTrain>---");
-            System.out.println("Left encoder:  " + encLeft.position());
-            System.out.println("Right encoder: " + encRight.position());
-            System.out.println();
+            // System.out.println("---<DriveTrain>---");
+            // System.out.println("Left encoder:  " + encLeft.position());
+            // System.out.println("Right encoder: " + encRight.position());
+            // System.out.println();
         }
     }
 

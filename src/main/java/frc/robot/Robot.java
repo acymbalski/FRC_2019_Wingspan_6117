@@ -259,6 +259,11 @@ public class Robot extends TimedRobot
       hatchArm.toggleGrabber();
     }
 
+    if(driver2.pressed(driver2.Select))
+    {
+      cargoArm.toggleArmLock();
+    }
+
     // extend/de-extend cargo hand
     if(driver2.pressed(driver2.Start))
     {
@@ -313,17 +318,17 @@ public class Robot extends TimedRobot
     // button 4 will move it the other way
     if(driver2.down(driver2.X))
     {
-      cargoArm.rotateArm(-1 * speedModifier);
+      cargoArm.requestMove(-1 * speedModifier);
     }
     else
     {
       if(driver2.down(driver2.Y))
       {
-        cargoArm.rotateArm(1 * speedModifier);
+        cargoArm.requestMove(1 * speedModifier);
       }
       else
       {
-        cargoArm.rotateArm(0);
+        //cargoArm.rotateArm(0);
       }
     }
     if(driver2.released(driver2.X) || driver2.released(driver2.Y))
