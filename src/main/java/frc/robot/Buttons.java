@@ -36,6 +36,11 @@ public class Buttons
     public int RAxisUD = 3;
     public int RAxisLR = 2;
 
+    public int Up = 0;
+    public int Down = 180;
+    public int Left = 270;
+    public int Right = 90;
+
     public Boolean isXInput = false;
 
 
@@ -97,6 +102,28 @@ public class Buttons
         }
     }
 
+    public Boolean released(int btn)
+    {
+
+        try
+        {
+            if(isXInput && (btn == L2 || btn == R2))
+            {
+                return joystick.getRawAxis(btn) < 0.75;
+            }
+            else
+            {
+                return joystick.getRawButtonReleased(btn);
+            }
+        }
+        catch(Exception e)
+        {
+            // controller not connected
+
+            return false;
+        }
+    }
+
     public double getAxis(int axis)
     {
         try
@@ -112,5 +139,10 @@ public class Buttons
     public Boolean down(int btn)
     {
         return joystick.getRawButton(btn);
+    }
+
+    public Boolean dpad(int dir)
+    {
+        return joystick.getPOV(1) == dir;
     }
 }

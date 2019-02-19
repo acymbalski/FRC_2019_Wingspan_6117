@@ -312,6 +312,27 @@ public class Robot extends TimedRobot
         cargoArm.rotateArm(0);
       }
     }
+    if(driver2.released(driver2.X) || driver2.released(driver2.Y))
+    {
+      cargoArm.setArmTarget(cargoArm.currentPosition());
+    }
+
+    if(driver2.dpad(driver2.Up))
+    {
+      cargoArm.setArmUp();
+    }
+    if(driver2.dpad(driver2.Down))
+    {
+      cargoArm.setArmDown();
+    }
+    if(driver2.dpad(driver2.Left))
+    {
+      cargoArm.setArmMid();
+    }
+    if(driver2.dpad(driver2.Right))
+    {
+      cargoArm.setArmLow();
+    }
 
   }
 
