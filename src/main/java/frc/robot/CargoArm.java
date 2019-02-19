@@ -87,16 +87,20 @@ public class CargoArm
 
         double distToTarget = curArmPos - armPositionTarget;
 
+        double amtToMove = -1 * Math.signum(distToTarget) * (1 - (curArmPos / armPosRange));
+
+        System.out.println("Moving cargo arm by " + amtToMove);
+
         // the encoder is only so accurate - even manually putting it at the zeroed position
         // we can read a value from -20 to about +20.
         // so let's not move the arm if we're "close enough" since we may be there already
-        if(distToTarget > 50)
+        if(distToTarget > 50 || distToTarget < -50)
         {
             // move by the percentage of the way there we are
             // ex. if we are at 0 and we need to be 100% of the way there, move at (100 - 0)% speed
             // ex. if we are at 250 and we need to be at enc 500, move at (100 - 50)% speed...?
             // and multiply by the sign of the distance i think.
-            moTalBallArm.set(ControlMode.PercentOutput, Math.signum(distToTarget) * (1 - (curArmPos / armPosRange)));
+            moTalBallArm.set(ControlMode.PercentOutput, amtToMove);
         }
     }
 
@@ -104,9 +108,9 @@ public class CargoArm
     {
         if(amt != 0)
         {
-        solArmBrake.set(false);
-        moTalBallArm.set(ControlMode.PercentOutput, amt);
-        System.out.println("Rotating arm.");
+            solArmBrake.set(false);
+            moTalBallArm.set(ControlMode.PercentOutput, amt);
+            System.out.println("Rotating arm.");
         }
         else
         {
