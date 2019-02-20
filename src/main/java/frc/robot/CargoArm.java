@@ -35,12 +35,6 @@ public class CargoArm
 
     Boolean armLockEnabled = true;
 
-    double previousError = 0.0;
-    double integral = 0.0;
-    double kp = 0.2;
-    double ki = 0.2;
-    double kd = 0.1;
-
     double motorPower = 0.0;
 
     public CargoArm()
