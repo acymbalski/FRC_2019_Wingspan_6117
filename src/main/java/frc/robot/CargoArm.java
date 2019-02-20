@@ -95,63 +95,63 @@ public class CargoArm
         }
         
 
-if(requestedMove != 0)
-{
-
-    rotateArm(requestedMove);
-    
-    armPositionTarget = encCargoArm.position();
-}
-else if(armLockEnabled)
-{
-
-        // check for cargo arm position
-        double curArmPos = encCargoArm.position();
-
-        double distToTarget = curArmPos - armPositionTarget;
-
-        //double amtToMove = Math.signum(distToTarget) * (1 - ((0.5) * curArmPos / armPosRange));
-        double amtToMove = -0.25;
-
-        if(distToTarget < 0)
+        if(requestedMove != 0)
         {
-            amtToMove *= -1;
+
+            rotateArm(requestedMove);
+
+            armPositionTarget = encCargoArm.position();
         }
-        if(Math.abs(distToTarget) > 1000)// && Math.signum())
+        else if(armLockEnabled)
         {
-            amtToMove *= 2.5;
-        }
 
-        // System.out.println("Moving cargo arm by " + amtToMove);
-        // System.out.println("Distance to move: " + distToTarget);
-        // System.out.println("Current position: " + curArmPos);
-        // System.out.println("---");
+                // check for cargo arm position
+                double curArmPos = encCargoArm.position();
 
-        // the encoder is only so accurate - even manually putting it at the zeroed position
-        // we can read a value from -20 to about +20.
-        // so let's not move the arm if we're "close enough" since we may be there already
-        if((curArmPos < -100) || (curArmPos > -100 && Math.signum(amtToMove) < 0) && (distToTarget > 25 || distToTarget < -25))
-        {
-            // move by the percentage of the way there we are
-            // ex. if we are at 0 and we need to be 100% of the way there, move at (100 - 0)% speed
-            // ex. if we are at 250 and we need to be at enc 500, move at (100 - 50)% speed...?
-            // and multiply by the sign of the distance i think.
+                double distToTarget = curArmPos - armPositionTarget;
 
-            // compensate for gravity by moving 2/3s as much downward than upward
-            if(curArmPos < -250 && Math.signum(amtToMove) < 0)
-            {
-                amtToMove *= 0.67;
+                //double amtToMove = Math.signum(distToTarget) * (1 - ((0.5) * curArmPos / armPosRange));
+                double amtToMove = -0.25;
+
+                if(distToTarget < 0)
+                {
+                    amtToMove *= -1;
+                }
+                if(Math.abs(distToTarget) > 1000)// && Math.signum())
+                {
+                    amtToMove *= 2.5;
+                }
+
+                // System.out.println("Moving cargo arm by " + amtToMove);
+                // System.out.println("Distance to move: " + distToTarget);
+                // System.out.println("Current position: " + curArmPos);
+                // System.out.println("---");
+
+                // the encoder is only so accurate - even manually putting it at the zeroed position
+                // we can read a value from -20 to about +20.
+                // so let's not move the arm if we're "close enough" since we may be there already
+                if((curArmPos < -100) || (curArmPos > -100 && Math.signum(amtToMove) < 0) && (distToTarget > 25 || distToTarget < -25))
+                {
+                    // move by the percentage of the way there we are
+                    // ex. if we are at 0 and we need to be 100% of the way there, move at (100 - 0)% speed
+                    // ex. if we are at 250 and we need to be at enc 500, move at (100 - 50)% speed...?
+                    // and multiply by the sign of the distance i think.
+
+                    // compensate for gravity by moving 2/3s as much downward than upward
+                    if(curArmPos < -250 && Math.signum(amtToMove) < 0)
+                    {
+                        amtToMove *= 0.67;
+                    }
+
+                    rotateArm(amtToMove);
+                }
+                else{
+                    rotateArm(0);
+                }
             }
 
-            rotateArm(amtToMove);
-        }
-        else{
-            rotateArm(0);
-        }
+            requestedMove = 0;
     }
-
-    requestedMove = 0;
-}
 
     public void rotateArm(double amt)
     {
@@ -176,7 +176,7 @@ else if(armLockEnabled)
 
     public void armDown() {
 
-        double target = -20;
+        double target = -100;
 
         if (encCargoArm.velocity() < (target - (target / 5)))
         {
