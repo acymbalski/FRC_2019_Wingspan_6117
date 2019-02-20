@@ -177,7 +177,8 @@ public class Robot extends TimedRobot
   @Override
   public void testPeriodic()
   {
-    System.out.println(cargoArm.currentPosition());
+    System.out.println(cargoArm.currentVelocity());
+    cargoArm.armDown();
     //cargoArm.periodicPIDMove(-3000);
   }
 

@@ -86,4 +86,9 @@ public class Encoder
         return moTal.getSelectedSensorPosition();
     }
 
+    public double velocity()
+    {
+        return moTal.getSelectedSensorVelocity();
+    }
+
 }

@@ -35,6 +35,14 @@ public class CargoArm
 
     Boolean armLockEnabled = true;
 
+    double previousError = 0.0;
+    double integral = 0.0;
+    double kp = 0.2;
+    double ki = 0.2;
+    double kd = 0.1;
+
+    double motorPower = 0.0;
+
     public CargoArm()
     {
         moTalBallArm = new TalonSRX(2);
@@ -52,7 +60,7 @@ public class CargoArm
         armPositions[0] = 0;
         armPositions[1] = -2835;
         armPositions[2] = -3880;
-        armPositions[3] = -6450;
+        armPositions[3] = -6000;
 
 
         // get max (abs) value for the range of our arm movement
@@ -74,6 +82,7 @@ public class CargoArm
         System.out.println("Ball roller value: " + encCargoArm.position());
 
         armPositionTarget = 0;
+        solArmBrake.set(false);
     }
 
     public void periodic()
@@ -148,7 +157,7 @@ else if(armLockEnabled)
     {
         if(amt != 0)
         {
-            solArmBrake.set(false);
+            //solArmBrake.set(false);
             moTalBallArm.set(ControlMode.PercentOutput, amt);
             System.out.println("Rotating arm.");
         }
@@ -161,8 +170,26 @@ else if(armLockEnabled)
                 System.out.println("Engaging brake.");
             }
 
-            solArmBrake.set(true);
+            //solArmBrake.set(true);
         }
+    }
+
+    public void armDown() {
+
+        double target = -20;
+
+        if (encCargoArm.velocity() < (target - (target / 5)))
+        {
+            motorPower += 0.003;
+        }
+        else if (encCargoArm.velocity() > (target + (target / 5)))
+        {
+            motorPower -= 0.003;
+        }
+
+        System.out.println("Motor Power: " + motorPower);
+        rotateArm(motorPower);
+
     }
 
     public void requestMove(double amt)
@@ -226,6 +253,11 @@ else if(armLockEnabled)
     public double currentPosition()
     {
         return encCargoArm.position();
+    }
+
+    public double currentVelocity()
+    {
+        return encCargoArm.velocity();
     }
 
     public void toggleArmLock()
