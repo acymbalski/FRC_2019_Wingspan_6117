@@ -200,6 +200,8 @@ public class CargoArm
             motorPower -= 0.003;
         }
         
+        rotateArm(motorPower);
+        
     }
 
     public void requestMove(double amt)
