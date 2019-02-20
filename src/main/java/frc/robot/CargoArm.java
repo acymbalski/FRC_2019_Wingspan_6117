@@ -176,11 +176,11 @@ public class CargoArm
 
     public void armDown() {
 
-        double target = -100;
+        double target = -100; //This is slow, measured in encoder ticks per cycle
 
         if (encCargoArm.velocity() < (target - (target / 5)))
         {
-            motorPower += 0.003;
+            motorPower += 0.003; //Arbitary constant to tune
         }
         else if (encCargoArm.velocity() > (target + (target / 5)))
         {
@@ -190,6 +190,22 @@ public class CargoArm
         System.out.println("Motor Power: " + motorPower);
         rotateArm(motorPower);
 
+    }
+    
+    public void armUp() {
+        
+        double target = 100;
+        
+        if (encCargoArm.velocity() < (target - (target / 5))) {
+            
+            motorPower += 0.003;
+            
+        }
+        else if (encCargoArm.velocity() > (target + (target / 5)))
+        {
+            motorPower -= 0.003;
+        }
+        
     }
 
     public void requestMove(double amt)
