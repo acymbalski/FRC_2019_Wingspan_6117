@@ -177,7 +177,8 @@ public class Robot extends TimedRobot
   @Override
   public void testPeriodic()
   {
-
+    System.out.println(cargoArm.currentPosition());
+    //cargoArm.periodicPIDMove(-3000);
   }
 
   private void updateVars()
@@ -285,7 +286,7 @@ public class Robot extends TimedRobot
   {
 
     // debug for now
-    cargoArm.periodic();
+    //cargoArm.periodic();
     driveTrain.periodic();
  
     // drive robot
@@ -357,12 +358,19 @@ public class Robot extends TimedRobot
     // up is out
     // down is in
     // (when it's negated)
-    cargoArm.spinBallMotor(Math.round(d2LeftJoystick));
+    //cargoArm.spinBallMotor(Math.round(d2LeftJoystick));
 
     // control hatch arm
     if(driver2.pressed(driver2.A))
     {
-      hatchArm.togglePistons();
+      //hatchArm.togglePistons();
+      //hatchArm.retractPistons();
+      hatchArm.pushPistons();
+    }
+    else if (driver2.released(driver2.A))
+    {
+      //hatchArm.pushPistons();
+      hatchArm.retractPistons();
     }
 
     // open/close hatch grabber arms
@@ -373,7 +381,7 @@ public class Robot extends TimedRobot
 
     if(driver2.pressed(driver2.Select))
     {
-      cargoArm.toggleArmLock();
+      //cargoArm.toggleArmLock();
     }
 
     // extend/de-extend cargo hand
@@ -386,15 +394,15 @@ public class Robot extends TimedRobot
     // button 8: R2
     // L2 will reverse the finger
     // R2 will rotate it forward
-    if(driver2.down(driver2.L2))
+    if(driver2.down(driver2.L1))
     {
-      hatchArm.rotateFinger(-1 * speedModifier);
+      hatchArm.rotateFinger(1 * speedModifier);
     }
     else
     {
-      if(driver2.down(driver2.R2))
+      if(driver2.down(driver2.L2))
       {
-        hatchArm.rotateFinger(1 * speedModifier);
+        hatchArm.rotateFinger(-1 * speedModifier);
       }
       else
       {
@@ -407,13 +415,13 @@ public class Robot extends TimedRobot
     // button 6: R1
     // L1 will move the hatch arm one way
     // R1 will move it the other way
-    if(driver2.down(driver2.L1))
+    if(driver2.down(driver2.R1))
     {
       hatchArm.rotateArm(-1 * speedModifier * 0.75);
     }
     else
     {
-      if(driver2.down(driver2.R1))
+      if(driver2.down(driver2.R2))
       {
         hatchArm.rotateArm(1 * speedModifier * 0.75);
       }
@@ -430,20 +438,22 @@ public class Robot extends TimedRobot
     // button 4 will move it the other way
     if(driver2.down(driver2.X))
     {
-      cargoArm.requestMove(-1 * speedModifier);
+      //cargoArm.requestMove(-1 * speedModifier);
+      cargoArm.rotateArm(-0.2);
     }
     else
     {
       if(driver2.down(driver2.Y))
       {
-        cargoArm.requestMove(1 * speedModifier);
+        //cargoArm.requestMove(2 * speedModifier);
+        cargoArm.rotateArm(0.8);
       }
       else
       {
-        //cargoArm.rotateArm(0);
+        cargoArm.rotateArm(0);
       }
     }
-    if(driver2.released(driver2.X) || driver2.released(driver2.Y))
+    /*if(driver2.released(driver2.X) || driver2.released(driver2.Y))
     {
       cargoArm.setArmTarget(cargoArm.currentPosition());
     }
@@ -463,7 +473,7 @@ public class Robot extends TimedRobot
     if(driver2.dpad(driver2.Right))
     {
       cargoArm.setArmLow();
-    }
+    }*/
 
   }
 }
