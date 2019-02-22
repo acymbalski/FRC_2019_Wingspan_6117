@@ -117,27 +117,9 @@ public class HatchArm
 
     public void togglePistons()
     {
-        
-        System.out.println("Push: " + !pistonsOut);
-        System.out.println("Retract: " + pistonsOut);
         solHatchPush.set(!pistonsOut);
         solHatchRetract.set(pistonsOut);
-
         pistonsOut = !pistonsOut;
-
-
-        // if(pistonsOut)
-        // {
-        //     solHatchPush.set(!pistonsOut);
-        //     solHatchRetract.set(pistonsOut);
-            
-        //     pistonsOut = !pistonsOut;
-        // }
-        // else
-        // {
-        //     //pushPistons();
-            
-        // }
     }
 
     /**
