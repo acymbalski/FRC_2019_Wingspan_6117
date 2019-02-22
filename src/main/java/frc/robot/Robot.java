@@ -22,6 +22,8 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.cameraserver.CameraServer;
 
+import edu.wpi.first.wpilibj.Preferences;
+
 // gyro
 // import com.kauailabs.navx.frc.AHRS;
 // import edu.wpi.first.wpilibj.I2C;
@@ -66,6 +68,8 @@ public class Robot extends TimedRobot
   Buttons driver1, driver2;
 
   Boolean initted = false;
+  
+  Preferences prefs;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -171,12 +175,44 @@ public class Robot extends TimedRobot
     commonPeriodic();
   }
 
+  @Override
+  public void testInit()
+  {
+      commonInit();
+  }
   /**
    * This function is called periodically during test mode.
    */
   @Override
   public void testPeriodic()
   {
+
+    // test is currently built to debug cargo arm placements
+    // press 'A' on the second controller to output the encoder's position
+    // and whatever angle it thinks we're at
+    // press 'Select' on p2 to re-zero the cargo arm
+    
+    
+    
+    if(driver2.pressed(driver2.A))
+    {
+        System.out.println("Cargo arm is at encoder value: " + cargoArm.encCargoArm.position());
+    }
+    if(driver2.pressed(driver2.Select))
+    {
+        cargoArm.zeroEncoder();
+        System.out.println("Cargo arm zeroed.");
+    }
+    
+    // this is an attempt to read values from the DriverStation so we can edit constants without redeploying
+    // this may need tweaking b/c the resource that said this was possible was from 2013
+    if(driver2.pressed(driver2.Start))
+    {
+        System.out.println("Grabbing constants from Smart Dashboard...");
+        cargoArm.GRAV_CONSTANT = prefs.getDouble("Grav_Constant", 0.5);
+        // cargoArm.ENCODER_RATIO = prefs.getDouble("Cargo_Gear_Ratio", 1);
+        cargoArm.armPositions[1] = prefs.getDouble("Cargo_Full_Down_Pos", -6000);
+    }
 
   }
 
@@ -276,7 +312,7 @@ public class Robot extends TimedRobot
         driver2 = new Buttons(joysticks[1]);
       }
       
-      inittied = true;
+      initted = true;
     }
     else
     {
