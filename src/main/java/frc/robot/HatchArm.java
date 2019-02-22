@@ -50,39 +50,16 @@ public class HatchArm
         pistonsOut = false;
     }
 
-    public void raiseArm()
-    {
-        // raise arm
-        // when arm is at top, move finger to hold
-
-        // when finger is holding (for sure), open arm (this step maybe should go to "release hatch")
-
-    }
-
-    public void openGrabber()
-    {
-        solHatchClose.set(false);
-        solHatchOpen.set(true);
-    }
-
     public void closeGrabber()
     {
         solHatchOpen.set(false);
         solHatchClose.set(true);
     }
 
-    public void toggleGrabber()
+    public void openGrabber()
     {
-        System.out.println("Toggling grabber to: " + grabberOpen);
-        if(grabberOpen)
-        {
-            closeGrabber();
-        }
-        else
-        {
-            openGrabber();
-        }
-        grabberOpen = !grabberOpen;
+        solHatchClose.set(false);
+        solHatchOpen.set(true);
     }
 
     /**
@@ -108,18 +85,29 @@ public class HatchArm
         pistonsOut = false;
     }
 
+    public void raiseArm()
+    {
+        // raise arm
+        // when arm is at top, move finger to hold
+
+        // when finger is holding (for sure), open arm (this step maybe should go to "release hatch")
+
+    }
+
     public void retractPistons()
     {
         solHatchPush.set(false);
         solHatchRetract.set(true);
         pistonsOut = true;
     }
-
-    public void togglePistons()
+    
+    /**
+	 * Rotates the hatch panel grabbing arm.
+	 * @param amt The speed to rotate with
+	 */
+    public void rotateArm(double amt)
     {
-        solHatchPush.set(!pistonsOut);
-        solHatchRetract.set(pistonsOut);
-        pistonsOut = !pistonsOut;
+        moVicHatArm.set(ControlMode.PercentOutput, amt);
     }
 
     /**
@@ -131,14 +119,25 @@ public class HatchArm
         moVicHatFin.set(ControlMode.PercentOutput, amt);
     }
 
-    
-    /**
-	 * Rotates the hatch panel grabbing arm.
-	 * @param amt The speed to rotate with
-	 */
-    public void rotateArm(double amt)
+    public void toggleGrabber()
     {
-        moVicHatArm.set(ControlMode.PercentOutput, amt);
+        System.out.println("Toggling grabber to: " + grabberOpen);
+        if(grabberOpen)
+        {
+            closeGrabber();
+        }
+        else
+        {
+            openGrabber();
+        }
+        grabberOpen = !grabberOpen;
+    }
+
+    public void togglePistons()
+    {
+        solHatchPush.set(!pistonsOut);
+        solHatchRetract.set(pistonsOut);
+        pistonsOut = !pistonsOut;
     }
 
 }
