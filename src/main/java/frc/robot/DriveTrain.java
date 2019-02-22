@@ -43,16 +43,6 @@ public class DriveTrain
         stop();
     }
 
-    public void init()
-    {
-        encLeft.initQuad();
-        encRight.initQuad();
-        
-        System.out.println("Left and right wheels zeroed.");
-        System.out.println("Left wheel value value: " + encLeft.position());
-        System.out.println("Right wheel value value: " + encRight.position());
-    }
-
     public void drive(double left_amt, double right_amt)
     {
         // if driving forward
@@ -70,12 +60,36 @@ public class DriveTrain
         }
     }
 
-    public void stop()
+    public void flip_orientation()
     {
-        set_left_motors(0);
-        set_right_motors(0);
+        System.out.println("Flipping orientation!");
+        orientation *= -1;
+    }
 
-        System.out.println("Motors stopped.");
+    public void init()
+    {
+        encLeft.initQuad();
+        encRight.initQuad();
+        
+        System.out.println("Left and right wheels zeroed.");
+        System.out.println("Left wheel value value: " + encLeft.position());
+        System.out.println("Right wheel value value: " + encRight.position());
+    }
+
+    public boolean isFacingForward()
+    {
+        return orientation == 1;
+    }
+
+    public void periodic()
+    {
+        if(Constants.DEBUG)
+        {
+            // System.out.println("---<DriveTrain>---");
+            // System.out.println("Left encoder:  " + encLeft.position());
+            // System.out.println("Right encoder: " + encRight.position());
+            // System.out.println();
+        }
     }
 
     public void set_left_motors(double amt)
@@ -90,26 +104,12 @@ public class DriveTrain
         moVicWhlR.set(ControlMode.PercentOutput, -amt * orientation * (fastSpeed ? 2 : 1));
     }
 
-    public void periodic()
+    public void stop()
     {
-        if(Constants.DEBUG)
-        {
-            // System.out.println("---<DriveTrain>---");
-            // System.out.println("Left encoder:  " + encLeft.position());
-            // System.out.println("Right encoder: " + encRight.position());
-            // System.out.println();
-        }
-    }
+        set_left_motors(0);
+        set_right_motors(0);
 
-    public void flip_orientation()
-    {
-        System.out.println("Flipping orientation!");
-        orientation *= -1;
-    }
-
-    public boolean isFacingForward()
-    {
-        return orientation == 1;
+        System.out.println("Motors stopped.");
     }
 
 }
