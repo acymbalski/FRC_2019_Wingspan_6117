@@ -277,6 +277,8 @@ public class Robot extends TimedRobot
         driver1 = new Buttons(joysticks[0]);
         driver2 = new Buttons(joysticks[1]);
       }
+      
+      inittied = true;
     }
     else
     {
