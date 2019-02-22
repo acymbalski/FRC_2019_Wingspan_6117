@@ -177,9 +177,7 @@ public class Robot extends TimedRobot
   @Override
   public void testPeriodic()
   {
-    System.out.println(cargoArm.currentVelocity());
-    cargoArm.armDown();
-    //cargoArm.periodicPIDMove(-3000);
+
   }
 
   private void updateVars()
@@ -364,17 +362,15 @@ public class Robot extends TimedRobot
     // (when it's negated)
     cargoArm.spinBallMotor(Math.round(d2LeftJoystick));
 
-    // control hatch arm
-    if(driver2.pressed(driver2.A))
-    {
-      //hatchArm.togglePistons();
-      //hatchArm.retractPistons();
+    // control hatch placement pistons
+    if(driver2.pressed(driver2.A)) {
+    
       hatchArm.pushPistons();
-    }
-    else if (driver2.released(driver2.A))
-    {
-      //hatchArm.pushPistons();
+      
+    } else if (driver2.released(driver2.A)) {
+    
       hatchArm.retractPistons();
+      
     }
 
     // open/close hatch grabber arms
