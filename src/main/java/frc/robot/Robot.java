@@ -72,62 +72,6 @@ public class Robot extends TimedRobot
   Preferences prefs;
 
   /**
-   * This function is run when the robot is first started up and should be used
-   * for any initialization code.
-   */
-  @Override
-  public void robotInit() {
-    System.out.println("RoboRIO initializing...");
-
-    // initialize cameras
-    camFront = CameraServer.getInstance().startAutomaticCapture(0);
-    camBack = CameraServer.getInstance().startAutomaticCapture(1);
-    camServForward = CameraServer.getInstance().getServer();
-    camServReverse = CameraServer.getInstance().getServer();
-
-    camServForward.setSource(camFront);
-    //camServReverse.setSource(camBack);
-
-    // init joysticks
-    Joystick[] joysticks = getControllers();
-
-    driveTrain = new DriveTrain();
-    hatchArm = new HatchArm();
-    cargoArm = new CargoArm();
-    ramp = new Ramp();
-
-    driver1 = new Buttons(joysticks[0]);
-    driver2 = new Buttons(joysticks[1]);
-
-    // init gyro
-    // try
-    // {
-    //   gyro = new AHRS(I2C.Port.kOnboard);
-    // }
-    // catch (RuntimeException ex)
-    // {
-    //   // DriverStation.reportError("Error instantiating navX-MXP: " + ex.getMessage(),
-    //   // true);
-    //   System.out.println("Error initializing gyro!");
-    // }
-
-    // // update gyro info on smart dashboard
-    // SmartDashboard.putNumber("X angle", gyro.getYaw() + 180);
-    // SmartDashboard.putNumber("Y angle", gyro.getPitch() + 180);
-    // SmartDashboard.putNumber("Z angle", gyro.getRoll() + 180);
-    
-    // SmartDashboard.putNumber("X vel", gyro.getVelocityX());
-    // SmartDashboard.putNumber("Y vel", gyro.getVelocityY());
-    // SmartDashboard.putNumber("Z vel", gyro.getVelocityZ());
-
-    // SmartDashboard.putData(gyro);
-    updateVars();
-    updateShuffleboard();
-
-    System.out.println("RoboRIO initialization complete.");
-  }
-
-  /**
    * This function is run once each time the robot enters autonomous mode.
    */
   @Override
@@ -150,141 +94,6 @@ public class Robot extends TimedRobot
   public void autonomousPeriodic()
   {
     commonPeriodic();
-  }
-
-  /**
-   * This function is called once each time the robot enters teleoperated mode.
-   */
-  @Override
-  public void teleopInit()
-  {
-    System.out.println("Initializing teleop mode...");
-
-    commonInit();
-
-
-    System.out.println("Teleop initialization complete.");
-  }
-
-  /**
-   * This function is called periodically during teleoperated mode.
-   */
-  @Override
-  public void teleopPeriodic()
-  {
-    commonPeriodic();
-  }
-
-  @Override
-  public void testInit()
-  {
-      commonInit();
-  }
-  /**
-   * This function is called periodically during test mode.
-   */
-  @Override
-  public void testPeriodic()
-  {
-
-    // test is currently built to debug cargo arm placements
-    // press 'A' on the second controller to output the encoder's position
-    // and whatever angle it thinks we're at
-    // press 'Select' on p2 to re-zero the cargo arm
-    
-    
-    
-    if(driver2.pressed(driver2.A))
-    {
-        System.out.println("Cargo arm is at encoder value: " + cargoArm.encCargoArm.position());
-    }
-    if(driver2.pressed(driver2.Select))
-    {
-        cargoArm.zeroEncoder();
-        System.out.println("Cargo arm zeroed.");
-    }
-    
-    // this is an attempt to read values from the DriverStation so we can edit constants without redeploying
-    // this may need tweaking b/c the resource that said this was possible was from 2013
-    if(driver2.pressed(driver2.Start))
-    {
-        System.out.println("Grabbing constants from Smart Dashboard...");
-        cargoArm.GRAV_CONSTANT = prefs.getDouble("Grav_Constant", 0.5);
-        // cargoArm.ENCODER_RATIO = prefs.getDouble("Cargo_Gear_Ratio", 1);
-        cargoArm.armPositions[1] = prefs.getDouble("Cargo_Full_Down_Pos", -6000);
-    }
-
-  }
-
-  private void updateVars()
-  {
-    // yaw = gyro.getYaw();
-    // pitch = gyro.getPitch();
-    // roll = gyro.getRoll();
-
-    // velX = gyro.getVelocityX();
-    // velY = gyro.getVelocityY();
-    // velZ = gyro.getVelocityZ();
-
-    // // adjust for range 0 - 360
-    // yaw += 180;
-    // pitch += 180;
-    // roll += 180;
-
-  }
-
-  private void updateShuffleboard()
-  {
-
-    // update gyro info on smart dashboard
-    // SmartDashboard.putNumber("X angle", yaw);//gyro.getYaw() + 180);
-    // SmartDashboard.putNumber("Y angle", pitch);//gyro.getPitch() + 180);
-    // SmartDashboard.putNumber("Z angle", roll);//gyro.getRoll() + 180);
-    // SmartDashboard.putNumber("X vel", velX);//gyro.getVelocityX());
-    // SmartDashboard.putNumber("Y vel", velY);//gyro.getVelocityY());
-    // SmartDashboard.putNumber("Z vel", velZ);//gyro.getVelocityZ());
-    // SmartDashboard.putData(gyro);
-  }
-
-  private Joystick[] getControllers()
-  {
-    Joystick[] joysticks = new Joystick[joystickPorts];
-
-
-    Joystick tmpJoystick;
-    for(int i = 0; i < joystickPorts; i++)
-    {
-      try
-      {
-        tmpJoystick = new Joystick(i);
-
-        if(tmpJoystick.getAxisCount() == 6)
-        {
-          System.out.println("Found 6 axis joystick in port " + i + ".");
-          System.out.println("Setting to driver 1...");
-          joysticks[0] = tmpJoystick;
-        }
-        else
-        {
-          System.out.println("Found 4 axis joystick in port " + i + ".");
-          System.out.println("Setting to driver 2...");
-          joysticks[1] = tmpJoystick;
-        }
-      }
-      catch(Exception e)
-      {
-        System.out.println("No joystick found in port " + i + "...");
-      }
-    }
-
-    return joysticks;
-  }
-
-  @Override
-  public void disabledInit()
-  {
-    // disabled for now
-    //initted = false;
   }
 
   public void commonInit()
@@ -399,14 +208,13 @@ public class Robot extends TimedRobot
     cargoArm.spinBallMotor(Math.round(d2LeftJoystick));
 
     // control hatch placement pistons
-    if(driver2.pressed(driver2.A)) {
-    
+    if(driver2.pressed(driver2.A))
+    {
       hatchArm.pushPistons();
-      
-    } else if (driver2.released(driver2.A)) {
-    
+    }
+    else if (driver2.released(driver2.A))
+    {
       hatchArm.retractPistons();
-      
     }
 
     // open/close hatch grabber arms
@@ -512,4 +320,197 @@ public class Robot extends TimedRobot
     }*/
 
   }
+
+  @Override
+  public void disabledInit()
+  {
+    // disabled for now
+    //initted = false;
+  }
+
+  private Joystick[] getControllers()
+  {
+    Joystick[] joysticks = new Joystick[joystickPorts];
+
+
+    Joystick tmpJoystick;
+    for(int i = 0; i < joystickPorts; i++)
+    {
+      try
+      {
+        tmpJoystick = new Joystick(i);
+
+        if(tmpJoystick.getAxisCount() == 6)
+        {
+          System.out.println("Found 6 axis joystick in port " + i + ".");
+          System.out.println("Setting to driver 1...");
+          joysticks[0] = tmpJoystick;
+        }
+        else
+        {
+          System.out.println("Found 4 axis joystick in port " + i + ".");
+          System.out.println("Setting to driver 2...");
+          joysticks[1] = tmpJoystick;
+        }
+      }
+      catch(Exception e)
+      {
+        System.out.println("No joystick found in port " + i + "...");
+      }
+    }
+
+    return joysticks;
+  }
+
+  /**
+   * This function is run when the robot is first started up and should be used
+   * for any initialization code.
+   */
+  @Override
+  public void robotInit()
+  {
+    System.out.println("RoboRIO initializing...");
+
+    // initialize cameras
+    camFront = CameraServer.getInstance().startAutomaticCapture(0);
+    camBack = CameraServer.getInstance().startAutomaticCapture(1);
+    camServForward = CameraServer.getInstance().getServer();
+    camServReverse = CameraServer.getInstance().getServer();
+
+    camServForward.setSource(camFront);
+    //camServReverse.setSource(camBack);
+
+    // init joysticks
+    Joystick[] joysticks = getControllers();
+
+    driveTrain = new DriveTrain();
+    hatchArm = new HatchArm();
+    cargoArm = new CargoArm();
+    ramp = new Ramp();
+
+    driver1 = new Buttons(joysticks[0]);
+    driver2 = new Buttons(joysticks[1]);
+
+    // init gyro
+    // try
+    // {
+    //   gyro = new AHRS(I2C.Port.kOnboard);
+    // }
+    // catch (RuntimeException ex)
+    // {
+    //   // DriverStation.reportError("Error instantiating navX-MXP: " + ex.getMessage(),
+    //   // true);
+    //   System.out.println("Error initializing gyro!");
+    // }
+
+    // // update gyro info on smart dashboard
+    // SmartDashboard.putNumber("X angle", gyro.getYaw() + 180);
+    // SmartDashboard.putNumber("Y angle", gyro.getPitch() + 180);
+    // SmartDashboard.putNumber("Z angle", gyro.getRoll() + 180);
+    
+    // SmartDashboard.putNumber("X vel", gyro.getVelocityX());
+    // SmartDashboard.putNumber("Y vel", gyro.getVelocityY());
+    // SmartDashboard.putNumber("Z vel", gyro.getVelocityZ());
+
+    // SmartDashboard.putData(gyro);
+    updateVars();
+    updateShuffleboard();
+
+    System.out.println("RoboRIO initialization complete.");
+  }
+
+  /**
+   * This function is called once each time the robot enters teleoperated mode.
+   */
+  @Override
+  public void teleopInit()
+  {
+    System.out.println("Initializing teleop mode...");
+
+    commonInit();
+
+
+    System.out.println("Teleop initialization complete.");
+  }
+
+  /**
+   * This function is called periodically during teleoperated mode.
+   */
+  @Override
+  public void teleopPeriodic()
+  {
+    commonPeriodic();
+  }
+
+  @Override
+  public void testInit()
+  {
+      commonInit();
+  }
+  /**
+   * This function is called periodically during test mode.
+   */
+  @Override
+  public void testPeriodic()
+  {
+
+    // test is currently built to debug cargo arm placements
+    // press 'A' on the second controller to output the encoder's position
+    // and whatever angle it thinks we're at
+    // press 'Select' on p2 to re-zero the cargo arm
+    
+    
+    
+    if(driver2.pressed(driver2.A))
+    {
+        System.out.println("Cargo arm is at encoder value: " + cargoArm.encCargoArm.position());
+    }
+    if(driver2.pressed(driver2.Select))
+    {
+        cargoArm.zeroEncoder();
+        System.out.println("Cargo arm zeroed.");
+    }
+    
+    // this is an attempt to read values from the DriverStation so we can edit constants without redeploying
+    // this may need tweaking b/c the resource that said this was possible was from 2013
+    if(driver2.pressed(driver2.Start))
+    {
+        System.out.println("Grabbing constants from Smart Dashboard...");
+        cargoArm.GRAV_CONSTANT = prefs.getDouble("Grav_Constant", 0.5);
+        // cargoArm.ENCODER_RATIO = prefs.getDouble("Cargo_Gear_Ratio", 1);
+        cargoArm.armPositions[1] = prefs.getDouble("Cargo_Full_Down_Pos", -6000);
+    }
+
+  }
+
+  private void updateShuffleboard()
+  {
+
+    // update gyro info on smart dashboard
+    // SmartDashboard.putNumber("X angle", yaw);//gyro.getYaw() + 180);
+    // SmartDashboard.putNumber("Y angle", pitch);//gyro.getPitch() + 180);
+    // SmartDashboard.putNumber("Z angle", roll);//gyro.getRoll() + 180);
+    // SmartDashboard.putNumber("X vel", velX);//gyro.getVelocityX());
+    // SmartDashboard.putNumber("Y vel", velY);//gyro.getVelocityY());
+    // SmartDashboard.putNumber("Z vel", velZ);//gyro.getVelocityZ());
+    // SmartDashboard.putData(gyro);
+  }
+
+  private void updateVars()
+  {
+    // yaw = gyro.getYaw();
+    // pitch = gyro.getPitch();
+    // roll = gyro.getRoll();
+
+    // velX = gyro.getVelocityX();
+    // velY = gyro.getVelocityY();
+    // velZ = gyro.getVelocityZ();
+
+    // // adjust for range 0 - 360
+    // yaw += 180;
+    // pitch += 180;
+    // roll += 180;
+
+  }
+
 }
