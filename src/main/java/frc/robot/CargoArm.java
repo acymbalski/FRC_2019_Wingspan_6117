@@ -103,52 +103,54 @@ public class CargoArm
         
         double amtToMove = Math.cos(curArmAngle) * GRAV_CONSTANT + (armPositionTarget - curArmAngle) / armPosRange;
         
-        return amtToMove;
+        // disabled for now (check calculations first)
+        //return amtToMove;
+        System.out.println("" + curArmAngle + "," + GRAV_CONSTANT + "," + armPositionTarget + "," + armPosRange);
         
-        // // check for cargo arm position
-        // double curArmPos = encCargoArm.position();
+        // check for cargo arm position
+        double curArmPos = encCargoArm.position();
 
-        // double distToTarget = curArmPos - armPositionTarget;
+        double distToTarget = curArmPos - armPositionTarget;
 
-        // //double amtToMove = Math.signum(distToTarget) * (1 - ((0.5) * curArmPos / armPosRange));
-        // double amtToMove = -0.25;
+        //double amtToMove = Math.signum(distToTarget) * (1 - ((0.5) * curArmPos / armPosRange));
+        double amtToMove = -0.25;
 
-        // if(distToTarget < 0)
-        // {
-            // amtToMove *= -1;
-        // }
-        // if(Math.abs(distToTarget) > 1000)// && Math.signum())
-        // {
-            // amtToMove *= 2.5;
-        // }
+        if(distToTarget < 0)
+        {
+            amtToMove *= -1;
+        }
+        if(Math.abs(distToTarget) > 1000)// && Math.signum())
+        {
+            amtToMove *= 2.5;
+        }
 
-        // // System.out.println("Moving cargo arm by " + amtToMove);
-        // // System.out.println("Distance to move: " + distToTarget);
-        // // System.out.println("Current position: " + curArmPos);
-        // // System.out.println("---");
+        // System.out.println("Moving cargo arm by " + amtToMove);
+        // System.out.println("Distance to move: " + distToTarget);
+        // System.out.println("Current position: " + curArmPos);
+        // System.out.println("---");
 
-        // // the encoder is only so accurate - even manually putting it at the zeroed position
-        // // we can read a value from -20 to about +20.
-        // // so let's not move the arm if we're "close enough" since we may be there already
-        // if((curArmPos < -100) || (curArmPos > -100 && Math.signum(amtToMove) < 0) && (distToTarget > 25 || distToTarget < -25))
-        // {
-            // // move by the percentage of the way there we are
-            // // ex. if we are at 0 and we need to be 100% of the way there, move at (100 - 0)% speed
-            // // ex. if we are at 250 and we need to be at enc 500, move at (100 - 50)% speed...?
-            // // and multiply by the sign of the distance i think.
+        // the encoder is only so accurate - even manually putting it at the zeroed position
+        // we can read a value from -20 to about +20.
+        // so let's not move the arm if we're "close enough" since we may be there already
+        if((curArmPos < -100) || (curArmPos > -100 && Math.signum(amtToMove) < 0) && (distToTarget > 25 || distToTarget < -25))
+        {
+            // move by the percentage of the way there we are
+            // ex. if we are at 0 and we need to be 100% of the way there, move at (100 - 0)% speed
+            // ex. if we are at 250 and we need to be at enc 500, move at (100 - 50)% speed...?
+            // and multiply by the sign of the distance i think.
 
-            // // compensate for gravity by moving 2/3s as much downward than upward
-            // if(curArmPos < -250 && Math.signum(amtToMove) < 0)
-            // {
-                // amtToMove *= 0.67;
-            // }
+            // compensate for gravity by moving 2/3s as much downward than upward
+            if(curArmPos < -250 && Math.signum(amtToMove) < 0)
+            {
+                amtToMove *= 0.67;
+            }
 
-            // return amtToMove;
-        // }
-        // else
-        // {
-            // return 0;
-        // }
+            return amtToMove;
+        }
+        else
+        {
+            return 0;
+        }
 
     }
 
