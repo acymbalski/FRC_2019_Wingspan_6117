@@ -35,13 +35,15 @@ public class CargoArm
 
     Boolean armLockEnabled = true;
 
-    double previousError = 0.0;
-    double integral = 0.0;
-    double kp = 0.2;
-    double ki = 0.2;
-    double kd = 0.1;
-
     double motorPower = 0.0;
+    
+    // amount to consider the cargo arm "locked" by
+    // ex. a value of 50 will let us be in the "correct" position if
+    // we're within +/- 50 encoder counts
+    double ENCODER_TOLERANCE = 50;
+    
+    double GRAV_CONSTANT = 0.5;
+
 
     public CargoArm()
     {
@@ -75,36 +77,85 @@ public class CargoArm
     
     }
 
-    public void init()
+    public void armDown()
     {
-        //encVicBallRoll.reset();
-        System.out.println("Ball roller zeroed.");
-        System.out.println("Ball roller value: " + encCargoArm.position());
 
-        armPositionTarget = 0;
-        solArmBrake.set(false);
-    }
+        double target = -100; //This is slow, measured in encoder ticks per cycle
 
-    public void periodic()
-    {
-        if(Constants.DEBUG)
+        if (encCargoArm.velocity() < (target - (target / 5)))
         {
-            // System.out.println("---<CargoArm>---");
-            // System.out.println("Ball roller:  " + encBallRoll.position());
-            // System.out.println();
+            motorPower += 0.003; //Arbitary constant to tune
+        }
+        else if (encCargoArm.velocity() > (target + (target / 5)))
+        {
+            motorPower -= 0.003;
+        }
+
+        System.out.println("Motor Power: " + motorPower);
+        rotateArm(motorPower);
+
+    }
+    
+    public void armUp()
+    {
+        
+        double target = 100;
+        
+        if (encCargoArm.velocity() < (target - (target / 5)))
+        {
+            
+            motorPower += 0.003;
+            
+        }
+        else if (encCargoArm.velocity() > (target + (target / 5)))
+        {
+            motorPower -= 0.003;
         }
         
+        rotateArm(motorPower);
+        
+    }
 
-if(requestedMove != 0)
-{
+    public void ballPull(double amt)
+    {
+        moVicBallRoll.set(ControlMode.PercentOutput, amt);
+    }
 
-    rotateArm(requestedMove);
-    
-    armPositionTarget = encCargoArm.position();
-}
-else if(armLockEnabled)
-{
+    public void ballPush(double amt)
+    {
+        ballPull(-amt);
+    }
 
+    public double currentPosition()
+    {
+        return encCargoArm.position();
+    }
+
+    public double currentVelocity()
+    {
+        return encCargoArm.velocity();
+    }
+
+    public double getArmCalculation()
+    {
+        
+        // cos(a_t)*G + (a_t - a_f)/a
+
+        // G = gravitational constant
+        // a_t = our current angular location
+
+        // a_f = our destination location
+
+        // a = range of the entire angle
+        
+        double curArmAngle = encCargoArm.angle(ENCODER_TOLERANCE);
+        
+        double amtToMove = Math.cos(curArmAngle) * GRAV_CONSTANT + (armPositionTarget - curArmAngle) / armPosRange;
+        
+        // disabled for now (check calculations first)
+        //return amtToMove;
+        System.out.println("" + curArmAngle + "," + GRAV_CONSTANT + "," + armPositionTarget + "," + armPosRange);
+        
         // check for cargo arm position
         double curArmPos = encCargoArm.position();
 
@@ -143,15 +194,55 @@ else if(armLockEnabled)
                 amtToMove *= 0.67;
             }
 
-            rotateArm(amtToMove);
+            return amtToMove;
         }
-        else{
-            rotateArm(0);
+        else
+        {
+            return 0;
         }
+
     }
 
-    requestedMove = 0;
-}
+    public void init()
+    {
+        //encVicBallRoll.reset();
+        System.out.println("Ball roller zeroed.");
+        System.out.println("Ball roller value: " + encCargoArm.position());
+
+        armPositionTarget = 0;
+        solArmBrake.set(false);
+    }
+
+    public void periodic()
+    {
+        if(Constants.DEBUG)
+        {
+            // System.out.println("---<CargoArm>---");
+            // System.out.println("Ball roller:  " + encBallRoll.position());
+            // System.out.println();
+        }
+        
+
+        if(requestedMove != 0)
+        {
+
+            rotateArm(requestedMove);
+
+            armPositionTarget = encCargoArm.position();
+        }
+        else if(armLockEnabled)
+        {
+            rotateArm(getArmCalculation());
+        }
+
+        requestedMove = 0;
+    }
+
+    public void requestMove(double amt)
+    {
+        requestedMove = amt;
+
+    }
 
     public void rotateArm(double amt)
     {
@@ -174,52 +265,6 @@ else if(armLockEnabled)
         }
     }
 
-    public void armDown() {
-
-        double target = -20;
-
-        if (encCargoArm.velocity() < (target - (target / 5)))
-        {
-            motorPower += 0.003;
-        }
-        else if (encCargoArm.velocity() > (target + (target / 5)))
-        {
-            motorPower -= 0.003;
-        }
-
-        System.out.println("Motor Power: " + motorPower);
-        rotateArm(motorPower);
-
-    }
-
-    public void requestMove(double amt)
-    {
-        requestedMove = amt;
-
-    }
-
-    public void ballPull(double amt)
-    {
-        moVicBallRoll.set(ControlMode.PercentOutput, amt);
-    }
-
-    public void ballPush(double amt)
-    {
-        ballPull(-amt);
-    }
-
-    public void spinBallMotor(double amt)
-    {
-        moVicBallRoll.set(ControlMode.PercentOutput, amt);
-    }
-    
-    public void toggleHand()
-    {
-        handIsExtended = !handIsExtended;
-
-        solHandExtend.set(handIsExtended);
-    }
-
     // snap cargo arm to set positions
     // the actual motor movement takes place in periodic()
     public void setArmDown()
@@ -228,20 +273,17 @@ else if(armLockEnabled)
         System.out.println("Setting cargo arm position to 'down'");
         armPositionTarget = armPositions[armPosDown];
     }
-    public void setArmUp()
-    {
-        System.out.println("Setting cargo arm position to 'up'");
-        armPositionTarget = armPositions[armPosUp];
-    }
-    public void setArmMid()
-    {
-        System.out.println("Setting cargo arm position to 'mid'");
-        armPositionTarget = armPositions[armPosMid];
-    }
+    
     public void setArmLow()
     {
         System.out.println("Setting cargo arm position to 'low'");
         armPositionTarget = armPositions[armPosLow];
+    }
+    
+    public void setArmMid()
+    {
+        System.out.println("Setting cargo arm position to 'mid'");
+        armPositionTarget = armPositions[armPosMid];
     }
 
     public void setArmTarget(double target)
@@ -249,15 +291,16 @@ else if(armLockEnabled)
         System.out.println("Setting arm target to: " + target);
         armPositionTarget = target;
     }
-
-    public double currentPosition()
+    
+    public void setArmUp()
     {
-        return encCargoArm.position();
+        System.out.println("Setting cargo arm position to 'up'");
+        armPositionTarget = armPositions[armPosUp];
     }
 
-    public double currentVelocity()
+    public void spinBallMotor(double amt)
     {
-        return encCargoArm.velocity();
+        moVicBallRoll.set(ControlMode.PercentOutput, amt);
     }
 
     public void toggleArmLock()
@@ -269,6 +312,13 @@ else if(armLockEnabled)
             armPositionTarget = encCargoArm.position();
             System.out.println("Locking cargo arm at: " + armPositionTarget);
         }
+    }
+    
+    public void toggleHand()
+    {
+        handIsExtended = !handIsExtended;
+
+        solHandExtend.set(handIsExtended);
     }
 
     public void zeroEncoder()
