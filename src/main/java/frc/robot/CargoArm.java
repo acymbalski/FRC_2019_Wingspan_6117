@@ -157,7 +157,7 @@ public class CargoArm
         
         double curArmAngle = encCargoArm.angle(ENCODER_TOLERANCE);
         
-        double amtToMove = Math.cos(curArmAngle) * GRAV_CONSTANT + (armPositionTarget - curArmAngle) / armPosRange;
+        double amtToMove = (Math.cos(curArmAngle) * GRAV_CONSTANT + (armPositionTarget - curArmAngle) / armPosRange) / (GRAV_CONSTANT + 1);
         
         // disabled for now (check calculations first)
         //return amtToMove;
@@ -209,30 +209,6 @@ public class CargoArm
         }
 
     }
-
-    // public void periodic()
-    // {
-    //     if(Constants.DEBUG)
-    //     {
-    //         // System.out.println("---<CargoArm>---");
-    //         // System.out.println("Ball roller:  " + encBallRoll.position());
-    //         // System.out.println();
-    //     }
-        
-    //     if(requestedMove != 0)
-    //     {
-
-    //         rotateArm(requestedMove);
-
-    //         armPositionTarget = encCargoArm.position();
-    //     }
-    //     else if(armLockEnabled)
-    //     {
-    //         rotateArm(getArmCalculation());
-    //     }
-
-    //     requestedMove = 0;
-    // }
 
     public void requestMove(double amt)
     {
