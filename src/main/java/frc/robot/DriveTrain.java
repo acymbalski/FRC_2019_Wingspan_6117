@@ -41,6 +41,12 @@ public class DriveTrain
 
         // stop all motors
         stop();
+        encLeft.initQuad();
+        encRight.initQuad();
+        
+        System.out.println("Left and right wheels zeroed.");
+        System.out.println("Left wheel value value: " + encLeft.position());
+        System.out.println("Right wheel value value: " + encRight.position());
     }
 
     public void drive(double left_amt, double right_amt)
@@ -66,30 +72,19 @@ public class DriveTrain
         orientation *= -1;
     }
 
-    public void init()
-    {
-        encLeft.initQuad();
-        encRight.initQuad();
+    // public void init()
+    // {
+    //     encLeft.initQuad();
+    //     encRight.initQuad();
         
-        System.out.println("Left and right wheels zeroed.");
-        System.out.println("Left wheel value value: " + encLeft.position());
-        System.out.println("Right wheel value value: " + encRight.position());
-    }
+    //     System.out.println("Left and right wheels zeroed.");
+    //     System.out.println("Left wheel value value: " + encLeft.position());
+    //     System.out.println("Right wheel value value: " + encRight.position());
+    // }
 
     public boolean isFacingForward()
     {
         return orientation == 1;
-    }
-
-    public void periodic()
-    {
-        if(Constants.DEBUG)
-        {
-            // System.out.println("---<DriveTrain>---");
-            // System.out.println("Left encoder:  " + encLeft.position());
-            // System.out.println("Right encoder: " + encRight.position());
-            // System.out.println();
-        }
     }
 
     public void set_left_motors(double amt)

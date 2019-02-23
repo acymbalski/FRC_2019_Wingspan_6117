@@ -80,7 +80,7 @@ public class Robot extends TimedRobot
     System.out.println("Initializing autonomous mode...");
 
     // zero arm encoder only in autonomous
-    cargoArm.zeroEncoder();
+    //cargoArm.zeroEncoder();
 
     commonInit();
 
@@ -103,13 +103,12 @@ public class Robot extends TimedRobot
 
       driveTrain.stop();
       System.out.println("Motors stopped.");
-      driveTrain.init();
-      System.out.println("Drive Train encoders zeroed.");
-  
-      
+      //driveTrain.init();
+      //System.out.println("Drive Train encoders zeroed.");
+
       updateShuffleboard();
   
-      cargoArm.init();
+      //cargoArm.init();
   
       // check controllers - do they exist?
       if(driver1.joystick == null || driver2.joystick == null)
@@ -134,7 +133,7 @@ public class Robot extends TimedRobot
 
     // debug for now
     //cargoArm.periodic();
-    driveTrain.periodic();
+    //driveTrain.periodic();
  
     // drive robot
     double d1LeftJoystick = driver1.getAxis(driver1.LAxisUD);
@@ -143,9 +142,7 @@ public class Robot extends TimedRobot
     double d2LeftJoystick = driver2.getAxis(driver2.LAxisUD);
     double d2RightJoystick = driver2.getAxis(driver2.RAxisUD);
 
-
     // -------------------- DRIVER 1
-
 
     driveTrain.drive(d1LeftJoystick * speedModifier, d1RightJoystick * speedModifier);
 
@@ -164,6 +161,7 @@ public class Robot extends TimedRobot
       System.out.println("Fast speed toggled to: " + driveTrain.fastSpeed);
     }
 
+    //drive straight
     if(driver1.down(driver1.L1))
     {
       driveTrain.set_right_motors(speedModifier);
@@ -453,17 +451,13 @@ public class Robot extends TimedRobot
   @Override
   public void testPeriodic()
   {
-
     // test is currently built to debug cargo arm placements
     // press 'A' on the second controller to output the encoder's position
     // and whatever angle it thinks we're at
     // press 'Select' on p2 to re-zero the cargo arm
-    
-    
-    
     if(driver2.pressed(driver2.A))
     {
-        System.out.println("Cargo arm is at encoder value: " + cargoArm.encCargoArm.position());
+        System.out.println("Cargo arm is at encoder value: " + cargoArm.currentPosition());
     }
     if(driver2.pressed(driver2.Select))
     {
