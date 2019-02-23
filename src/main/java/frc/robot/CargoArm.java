@@ -40,7 +40,7 @@ public class CargoArm
     // amount to consider the cargo arm "locked" by
     // ex. a value of 50 will let us be in the "correct" position if
     // we're within +/- 50 encoder counts
-    double ENCODER_TOLERANCE = 50;
+    int ENCODER_TOLERANCE = 50;
     
     double GRAV_CONSTANT = 0.5;
 
@@ -74,6 +74,13 @@ public class CargoArm
                 armPosRange = Math.abs(armPositions[i]);
             }
         }
+
+        //encVicBallRoll.reset();
+        System.out.println("Ball roller zeroed.");
+        System.out.println("Ball roller value: " + encCargoArm.position());
+
+        armPositionTarget = 0;
+        solArmBrake.set(false);
     
     }
 
@@ -150,7 +157,7 @@ public class CargoArm
         
         double curArmAngle = encCargoArm.angle(ENCODER_TOLERANCE);
         
-        double amtToMove = Math.cos(curArmAngle) * GRAV_CONSTANT + (armPositionTarget - curArmAngle) / armPosRange;
+        double amtToMove = (Math.cos(curArmAngle) * GRAV_CONSTANT + (armPositionTarget - curArmAngle) / armPosRange) / (GRAV_CONSTANT + 1);
         
         // disabled for now (check calculations first)
         //return amtToMove;
@@ -162,7 +169,7 @@ public class CargoArm
         double distToTarget = curArmPos - armPositionTarget;
 
         //double amtToMove = Math.signum(distToTarget) * (1 - ((0.5) * curArmPos / armPosRange));
-        double amtToMove = -0.25;
+        //double amtToMove = -0.25;
 
         if(distToTarget < 0)
         {
@@ -203,52 +210,15 @@ public class CargoArm
 
     }
 
-    public void init()
-    {
-        //encVicBallRoll.reset();
-        System.out.println("Ball roller zeroed.");
-        System.out.println("Ball roller value: " + encCargoArm.position());
-
-        armPositionTarget = 0;
-        solArmBrake.set(false);
-    }
-
-    public void periodic()
-    {
-        if(Constants.DEBUG)
-        {
-            // System.out.println("---<CargoArm>---");
-            // System.out.println("Ball roller:  " + encBallRoll.position());
-            // System.out.println();
-        }
-        
-
-        if(requestedMove != 0)
-        {
-
-            rotateArm(requestedMove);
-
-            armPositionTarget = encCargoArm.position();
-        }
-        else if(armLockEnabled)
-        {
-            rotateArm(getArmCalculation());
-        }
-
-        requestedMove = 0;
-    }
-
     public void requestMove(double amt)
     {
         requestedMove = amt;
-
     }
 
     public void rotateArm(double amt)
     {
         if(amt != 0)
         {
-            //solArmBrake.set(false);
             moTalBallArm.set(ControlMode.PercentOutput, amt);
             System.out.println("Rotating arm.");
         }
@@ -260,8 +230,6 @@ public class CargoArm
             {
                 System.out.println("Engaging brake.");
             }
-
-            //solArmBrake.set(true);
         }
     }
 
