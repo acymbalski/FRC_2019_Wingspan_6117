@@ -81,13 +81,13 @@ public class Encoder
         return deg;
     }
     
-    public double angle(int tolerance)
+    public double angle()//int tolerance)
     {
-        double encoder = ((int) position() / tolerance) * tolerance;
+        // disabled to do tolerance elsewhere
+        //double encoder = ((int) position() / tolerance) * tolerance;
         double angle = 0;
         
-        // TODO angle calculation
-        angle = encoder;
+        angle = position() / 56.9;
         
         
         return angle;

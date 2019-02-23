@@ -42,7 +42,7 @@ public class CargoArm
     // we're within +/- 50 encoder counts
     int ENCODER_TOLERANCE = 50;
     
-    double GRAV_CONSTANT = 0.5;
+    double GRAV_CONSTANT = 0.4;
 
 
     public CargoArm()
@@ -156,7 +156,7 @@ public class CargoArm
 
         // a = range of the entire angle
         
-        double curArmAngle = encCargoArm.angle(ENCODER_TOLERANCE);
+        double curArmAngle = encCargoArm.angle();
         
         double amtToMove = (Math.cos(curArmAngle) * GRAV_CONSTANT + (armPositionTarget - curArmAngle) / armPosRange) / (GRAV_CONSTANT + 1);
         
