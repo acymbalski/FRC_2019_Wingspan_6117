@@ -456,17 +456,17 @@ public class Robot extends TimedRobot
     // and whatever angle it thinks we're at
     // press 'Select' on p2 to re-zero the cargo arm
     
-    cargoArm.armUp();
+    // cargoArm.armUp();
     
-    // if(driver2.pressed(driver2.A))
-    // {
-    //     System.out.println("Cargo arm is at encoder value: " + cargoArm.encCargoArm.position());
-    // }
-    // if(driver2.pressed(driver2.Select))
-    // {
-    //     cargoArm.zeroEncoder();
-    //     System.out.println("Cargo arm zeroed.");
-    // }
+    if(driver2.pressed(driver2.A))
+    {
+        System.out.println("Cargo arm is at encoder value: " + cargoArm.encCargoArm.position());
+    }
+    if(driver2.pressed(driver2.Select))
+    {
+        cargoArm.zeroEncoder();
+        System.out.println("Cargo arm zeroed.");
+    }
     
     // // this is an attempt to read values from the DriverStation so we can edit constants without redeploying
     // // this may need tweaking b/c the resource that said this was possible was from 2013

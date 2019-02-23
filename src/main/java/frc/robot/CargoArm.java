@@ -106,20 +106,21 @@ public class CargoArm
     public void armUp()
     {
         
-        double target = 100;
+        double target = 200;
         
         if (encCargoArm.velocity() < (target - (target / 5)))
         {
             
-            motorPower += 0.003;
+            motorPower += 0.001;
             
         }
         else if (encCargoArm.velocity() > (target + (target / 5)))
         {
-            motorPower -= 0.003;
+            motorPower -= 0.001;
         }
         
         rotateArm(motorPower);
+        System.out.printf("Velocity: %f Motor Power: %f%n", encCargoArm.velocity(), motorPower);
         
     }
 
@@ -220,7 +221,7 @@ public class CargoArm
         if(amt != 0)
         {
             moTalBallArm.set(ControlMode.PercentOutput, amt);
-            System.out.println("Rotating arm.");
+            //System.out.println("Rotating arm.");
         }
         else
         {
@@ -228,7 +229,7 @@ public class CargoArm
 
             if(!solArmBrake.get())
             {
-                System.out.println("Engaging brake.");
+                //System.out.println("Engaging brake.");
             }
         }
     }
