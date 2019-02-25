@@ -283,21 +283,21 @@ public class Robot extends TimedRobot
     if(driver2.down(driver2.X))
     {
       //cargoArm.requestMove(-1 * speedModifier);
-      cargoArm.rotateArm(-0.2);
+      cargoArm.rotateArm(-0.3);
     }
     else
     {
       if(driver2.down(driver2.Y))
       {
         //cargoArm.requestMove(2 * speedModifier);
-        cargoArm.rotateArm(0.8);
+        cargoArm.rotateArm(0.3);
       }
       else
       {
-        cargoArm.rotateArm(0);
+        cargoArm.rotateArm(cargoArm.getArmCalculation());
       }
     }
-    /*if(driver2.released(driver2.X) || driver2.released(driver2.Y))
+    if(driver2.released(driver2.X) || driver2.released(driver2.Y))
     {
       cargoArm.setArmTarget(cargoArm.currentPosition());
     }
@@ -317,7 +317,7 @@ public class Robot extends TimedRobot
     if(driver2.dpad(driver2.Right))
     {
       cargoArm.setArmLow();
-    }*/
+    }
 
   }
 
