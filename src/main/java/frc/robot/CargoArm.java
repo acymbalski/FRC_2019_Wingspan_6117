@@ -264,14 +264,19 @@ public class CargoArm
 
     public void rotateArm(double amt)
     {
+        
+        double armCurAngle = encCargoArm.angle() + ZERO_ANGLE;
+        armCurAngle = Math.toRadians(armCurAngle);
+        
         if(amt != 0)
         {
-            moTalBallArm.set(ControlMode.PercentOutput, amt);
+            moTalBallArm.set(ControlMode.PercentOutput, amt + -1 * Math.sin(armCurAngle) * GRAV_CONSTANT);
+            
             //System.out.println("Rotating arm.");
         }
         else
         {
-            moTalBallArm.set(ControlMode.PercentOutput, amt);
+            //moTalBallArm.set(ControlMode.PercentOutput, amt);
 
             if(!solArmBrake.get())
             {
