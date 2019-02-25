@@ -1,0 +1,44 @@
+TEST PROCEDURE
+
+
+0) Ensure cargo arm is at Zero position - robot must be on floor
+1) Measure cargo arm angle and update if necessary
+2) Put robot in Test mode
+3) Move arm to around 90 degrees
+4) Press 'A' and verify that reported angle is near -90 degrees
+5) Press 'B' and verify that we need a strong positive force (above 0.4) to reach angle "0"
+6) Press 'Start' and check to see if new bike brake is strong enough to hold arm
+7) Press 'Start' to disengage lock, move arm to around 45 degrees, and press 'Start' again to reengage
+8) If lock works, retool code to unbrake when we need to move and rebrake when we are close enough (or let go of manual control buttons)
+9) If lock does not work, adjust test goal angle with DPAD down
+10) Press 'A' to see the reported arm angle
+11) Press 'B' to verify that the force requested makes sense
+12) Move arm a little past vertical position
+13) Adjust test goal angle to be +15
+14) Verify with 'A' that the current angle is beyond 95 degrees
+15) Verify with 'B' that NO force is to be applied
+16) Adjust test goal angle to be -120
+17) Move arm to -100 degrees
+18) Verify with 'A' that angle is beyond -95 degrees
+19) Verify with 'B' that NO force is to be applied
+20) Press 'X' to toggle the arm lock
+21) Press 'A' to see angle and 'B' to see attempted force
+22) Verify that force reported is not higher than a magnitude of 0.4
+23) Verify that this force is reported as 0.4 (or as close as possible) when arm is at 90 degrees
+24) Clear the area
+25) Ensure brake is NOT applied by pressing 'Start'
+26) Verify that the arm lock IS enabled by pressing 'X'
+27) Press L2 and R2 at the same time to enable test movement
+28) Verify that the arm does not move
+29) If the area is safe, move arm manually upwards
+30) Verify that the arm still does not move (force should be adjusted)
+31) Hold arm to prevent it falling when movement is disabled
+32) Press L2 and R2 at the same time to disable test movement
+33) Use DPAD up and down to move target angle to -45 degrees
+34) Verify with 'A' and 'B' that arm angle is at resting angle (-120?) and that the force applied is positive
+35) Clear the area
+36) Press L2 and R2 to enable arm movement
+37) Verify that the arm moves closer to target and slows as it approaches
+38) Verify that the arm does not fall
+39) Verify that the arm does not overshoot too far
+40) Verify that the arm does not wobble

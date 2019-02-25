@@ -46,7 +46,7 @@ public class CargoArm
     
     // in order to properly calculate the sin of the angle we need to know what angle we're starting at in the 0 position
     // in that position, the ENCODER value is 0, but we will adjust the angle value in here by this amount
-    double ZERO_ANGLE = 0;
+    double ZERO_ANGLE = 21;
 
 
     public CargoArm()
@@ -128,6 +128,11 @@ public class CargoArm
         
     }
 
+    public void toggleBrake()
+    {
+        solArmBrake.set(!solArmBrake.get());
+    }
+
     public void ballPull(double amt)
     {
         moVicBallRoll.set(ControlMode.PercentOutput, amt);
@@ -179,25 +184,31 @@ public class CargoArm
         // -1 times the force of gravity at this angle minus the percentage of the distance we are to the target times a limiting factor (to ensure we never go beyond [-1.0, 1.0])
         // the latter part is multiplied by the direction in which we must move the arm (the sign of the distance we have to the target. positive = we must go up, negative = we must go down).
         
-        double amtToMove = -1 * ((Math.sin(armCurAngle) * GRAV_CONSTANT) - Math.Signum(distToTarget) * (distToTarget) * (1 - GRAV_CONSTANT));
-        
-        // if we are moving positive and we're beyond 5 degrees, don't try to push further
-        if(Math.signum(distToTarget) > 0)
+        double amtToMove = 0;
+        if(armLockEnabled)
         {
-            if(armCurAngle <= 0.09)
+            amtToMove = -1 * (Math.sin(armCurAngle) * GRAV_CONSTANT);
+        }
+        else
+        {
+            amtToMove =  -1 * ((Math.sin(armCurAngle) * GRAV_CONSTANT) - Math.signum(distToTarget) * (distToTarget) * (1 - GRAV_CONSTANT));
+            // if we are moving positive and we're beyond 5 degrees, don't try to push further
+            if(Math.signum(distToTarget) > 0)
             {
-                amtToMove = 0;
+                if(armCurAngle <= 0.09)
+                {
+                    amtToMove = 0;
+                }
+            }
+            // similarly, if we're moving negative and we're beyond -95 degrees, don't try to push further...?
+            if(Math.signum(distToTarget) < 0)
+            {
+                if(armCurAngle >= 1.66)
+                {
+                    amtToMove = 0;
+                }
             }
         }
-        // similarly, if we're moving negative and we're beyond -95 degrees, don't try to push further...?
-        if(Math.signum(distToTarget) < 0)
-        {
-            if(armCurAngle >= 1.66)
-            {
-                amtToMove = 0;
-            }
-        }
-        
         // drewnote: if the above is too slow, you can adjust it by mulitplying the percentage check on the right by a factor.
         // you can determine the factor by finding the above equation's maximum peak value, which is dependent on the value of sin(a)*G at the arm's zero position
         
@@ -327,11 +338,11 @@ public class CargoArm
     {
         armLockEnabled = !armLockEnabled;
         System.out.println("Cargo arm lock set to: " + armLockEnabled);
-        if(armLockEnabled)
-        {
-            armPositionTarget = encCargoArm.position();
-            System.out.println("Locking cargo arm at: " + armPositionTarget);
-        }
+        // if(armLockEnabled)
+        // {
+        //     armPositionTarget = encCargoArm.position();
+        //     System.out.println("Locking cargo arm at: " + armPositionTarget);
+        // }
     }
     
     public void toggleHand()

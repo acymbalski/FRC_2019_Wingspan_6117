@@ -73,6 +73,10 @@ public class Robot extends TimedRobot
   
   double testGoalAngle = 0;
 
+  // enable this to allow movement in Test mode
+  // this can be really dangerous if you don't know what you're doing!
+  Boolean movementInTest = false;
+
   /**
    * This function is run once each time the robot enters autonomous mode.
    */
@@ -501,6 +505,43 @@ public class Robot extends TimedRobot
     {
         cargoArm.GRAV_CONSTANT -= 0.02;
         System.out.println("Gravitational constant decremented to " + cargoArm.GRAV_CONSTANT);
+    }
+
+    // test brake power
+    if(driver2.pressed(driver2.Start))
+    {
+      cargoArm.toggleBrake();
+      System.out.println("Bike brake toggled to: " + cargoArm.solArmBrake.get());
+    }
+
+    // press 'x' to toggle whether or not arm should attempt to ONLY counterract the force of gravity
+    // use this to check if the grav constant is correct. if it is, the arm should not fall
+    if(driver2.pressed(driver2.X))
+    {
+      cargoArm.toggleArmLock();
+      System.out.println("Arm lock toggled.");
+      if(cargoArm.armLockEnabled)
+      {
+        System.out.println("Arm should stay constant at given location.");
+      }
+    }
+
+    if(driver2.down(driver2.L2) && driver2.down(driver2.R2))
+    {
+      movementInTest = !movementInTest;
+      if(movementInTest)
+      {
+        System.out.println("Movement in test has been enabled!");
+      }
+      else
+      {
+        System.out.println("Movement in test has been disabled.");
+      }
+    }
+
+    if(movementInTest)
+    {
+      cargoArm.rotateArm(cargoArm.getArmCalculation());
     }
     
     // // this is an attempt to read values from the DriverStation so we can edit constants without redeploying
