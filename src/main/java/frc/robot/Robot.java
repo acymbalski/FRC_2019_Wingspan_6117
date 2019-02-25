@@ -70,6 +70,8 @@ public class Robot extends TimedRobot
   Boolean initted = false;
   
   Preferences prefs;
+  
+  double testGoalAngle = 0;
 
   /**
    * This function is run once each time the robot enters autonomous mode.
@@ -461,11 +463,44 @@ public class Robot extends TimedRobot
     if(driver2.pressed(driver2.A))
     {
         System.out.println("Cargo arm is at encoder value: " + cargoArm.encCargoArm.position());
+        System.out.println("Which is " + (cargoArm.encCargoArm.angle() + cargoArm.ZERO_ANGLE) + " degrees.");
     }
     if(driver2.pressed(driver2.Select))
     {
         cargoArm.zeroEncoder();
         System.out.println("Cargo arm zeroed.");
+    }
+    
+    if(driver2.pressed(driver2.B))
+    {
+        cargoArm.armPositionTarget = testGoalAngle * 56.9;
+        double forceToApply = cargoArm.getArmCalculation();
+        System.out.println("To reach the goal of " + testGoalAngle + ", the following force would be applied: " + forceToApply);
+    }
+    
+    // adjust test goal angle to combine with the above to see, without moving, a cargo arm motor speed to apply
+    if(driver2.dpad(driver2.Up))
+    {
+        testGoalAngle += 5;
+        System.out.println("Test goal angle incremented to " + testGoalAngle);
+    }
+    if(driver2.dpad(driver2.Down))
+    {
+        testGoalAngle -= 5;
+        System.out.println("Test goal angle decremented to " + testGoalAngle);
+    }
+    
+    // adjust gravitational constant for on-the-go tweak testing
+    // if you don't know what you're doing, do not try to do this!
+    if(driver2.pressed(driver2.R1))
+    {
+        cargoArm.GRAV_CONSTANT += 0.02;
+        System.out.println("Gravitational constant incremented to " + cargoArm.GRAV_CONSTANT);
+    }
+    if(driver2.pressed(driver2.L1))
+    {
+        cargoArm.GRAV_CONSTANT -= 0.02;
+        System.out.println("Gravitational constant decremented to " + cargoArm.GRAV_CONSTANT);
     }
     
     // // this is an attempt to read values from the DriverStation so we can edit constants without redeploying
