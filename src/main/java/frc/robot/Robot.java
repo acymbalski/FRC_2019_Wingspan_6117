@@ -297,7 +297,7 @@ public class Robot extends TimedRobot
       if(driver2.down(driver2.Y))
       {
         //cargoArm.requestMove(2 * speedModifier);
-        cargoArm.manuallyRotateArm(0.3);
+        cargoArm.manuallyRotateArm(0.5);
         cargoArm.solArmBrake.set(false);
       }
       else
