@@ -104,6 +104,8 @@ public class Robot extends TimedRobot
 
   public void commonInit()
   {
+    movementInTest = false;
+
     if(!initted)
     {
 
@@ -287,40 +289,54 @@ public class Robot extends TimedRobot
     if(driver2.down(driver2.X))
     {
       //cargoArm.requestMove(-1 * speedModifier);
-      cargoArm.rotateArm(-0.3);
+      cargoArm.manuallyRotateArm(-0.3);
+      cargoArm.solArmBrake.set(false);
     }
     else
     {
       if(driver2.down(driver2.Y))
       {
         //cargoArm.requestMove(2 * speedModifier);
-        cargoArm.rotateArm(0.3);
+        cargoArm.manuallyRotateArm(0.3);
+        cargoArm.solArmBrake.set(false);
       }
       else
       {
         cargoArm.rotateArm(cargoArm.getArmCalculation());
+        cargoArm.solArmBrake.set(true);
       }
     }
     if(driver2.released(driver2.X) || driver2.released(driver2.Y))
     {
       cargoArm.setArmTarget(cargoArm.currentPosition());
+      cargoArm.solArmBrake.set(true);
     }
 
-    if(driver2.dpad(driver2.Up))
+    // if(driver2.dpad(driver2.Up))
+    // {
+    //   cargoArm.setArmUp();
+    // }
+    // if(driver2.dpad(driver2.Down))
+    // {
+    //   cargoArm.setArmDown();
+    // }
+    // if(driver2.dpad(driver2.Left))
+    // {
+    //   cargoArm.setArmMid();
+    // }
+    // if(driver2.dpad(driver2.Right))
+    // {
+    //   cargoArm.setArmLow();
+    // }
+
+    if(driver2.pressed(driver2.LThumb))
     {
-      cargoArm.setArmUp();
+      cargoArm.armLockEnabled = !cargoArm.armLockEnabled;
+      
     }
-    if(driver2.dpad(driver2.Down))
+    if(driver2.pressed(driver2.RThumb))
     {
-      cargoArm.setArmDown();
-    }
-    if(driver2.dpad(driver2.Left))
-    {
-      cargoArm.setArmMid();
-    }
-    if(driver2.dpad(driver2.Right))
-    {
-      cargoArm.setArmLow();
+      cargoArm.toggleBrake();
     }
 
   }
@@ -450,6 +466,9 @@ public class Robot extends TimedRobot
   public void testInit()
   {
       commonInit();
+
+      // reset grav constant
+      cargoArm.GRAV_CONSTANT = 0.4;
   }
   /**
    * This function is called periodically during test mode.
@@ -486,11 +505,14 @@ public class Robot extends TimedRobot
     if(driver2.dpad(driver2.Up))
     {
         testGoalAngle += 5;
+        cargoArm.armPositionTarget = testGoalAngle * 56.9;
         System.out.println("Test goal angle incremented to " + testGoalAngle);
     }
     if(driver2.dpad(driver2.Down))
     {
         testGoalAngle -= 5;
+        
+        cargoArm.armPositionTarget = testGoalAngle * 56.9;
         System.out.println("Test goal angle decremented to " + testGoalAngle);
     }
     
@@ -526,7 +548,7 @@ public class Robot extends TimedRobot
       }
     }
 
-    if(driver2.down(driver2.L2) && driver2.down(driver2.R2))
+    if(driver2.down(driver2.L2) && driver2.pressed(driver2.R2))
     {
       movementInTest = !movementInTest;
       if(movementInTest)

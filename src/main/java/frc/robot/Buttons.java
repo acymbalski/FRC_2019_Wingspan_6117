@@ -34,6 +34,7 @@ public class Buttons
 
     public Boolean isXInput = false;
 
+    public int lastDpad = -1;
 
     public Buttons(Joystick stick)
     {
@@ -135,5 +136,16 @@ public class Buttons
     public Boolean dpad(int dir)
     {
         return joystick.getPOV(0) == dir;
+
+        // if(joystick.getPOV(0) == lastDpad)
+        // {
+        //     //lastDpad = joystick.getPOV(0);
+        //     return false;
+        // }
+        // else
+        // {
+        //     lastDpad = joystick.getPOV(0);
+        //     return joystick.getPOV(0) == dir;
+        // }
     }
 }

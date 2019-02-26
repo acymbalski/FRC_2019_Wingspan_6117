@@ -84,7 +84,7 @@ public class CargoArm
         System.out.println("Ball roller value: " + encCargoArm.position());
 
         armPositionTarget = 0;
-        solArmBrake.set(false);
+        solArmBrake.set(true);
     
     }
 
@@ -188,23 +188,47 @@ public class CargoArm
         if(armLockEnabled)
         {
             amtToMove = -1 * (Math.sin(armCurAngle) * GRAV_CONSTANT);
+
+
+            // if we are moving positive and we're beyond 5 degrees, don't try to push further
+            if(Math.signum(amtToMove) > 0)
+            {
+                if(armCurAngle >= 0.09)
+                {
+                    System.out.println("Angle is beyond 5 degrees and moving upward. No force will be applied.");
+                    amtToMove = 0;
+                }
+            }
+            // similarly, if we're moving negative and we're beyond -95 degrees, don't try to push further...?
+            if(Math.signum(amtToMove) < 0)
+            {
+                if(armCurAngle <= -1.57)
+                {
+                    System.out.println("Angle is beyond -90 degrees and moving downward. No force will be applied.");
+                    amtToMove = 0;
+                }
+            }
         }
         else
         {
-            amtToMove =  -1 * ((Math.sin(armCurAngle) * GRAV_CONSTANT) - Math.signum(distToTarget) * (distToTarget) * (1 - GRAV_CONSTANT));
+            //System.out.println("Distance to target is: " + distToTarget);
+
+            amtToMove =  -1 * ((Math.sin(armCurAngle) * GRAV_CONSTANT) - Math.signum(distToTarget) * (Math.toDegrees(distToTarget) / (armPosRange / 56.9)) * (1 - GRAV_CONSTANT));
             // if we are moving positive and we're beyond 5 degrees, don't try to push further
             if(Math.signum(distToTarget) > 0)
             {
-                if(armCurAngle <= 0.09)
+                if(armCurAngle >= 0.09)
                 {
+                    System.out.println("Angle is beyond 5 degrees and moving upward. No force will be applied.");
                     amtToMove = 0;
                 }
             }
             // similarly, if we're moving negative and we're beyond -95 degrees, don't try to push further...?
             if(Math.signum(distToTarget) < 0)
             {
-                if(armCurAngle >= 1.66)
+                if(armCurAngle <= -1.57)
                 {
+                    System.out.println("Angle is beyond -90 degrees and moving downward. No force will be applied.");
                     amtToMove = 0;
                 }
             }
@@ -215,7 +239,7 @@ public class CargoArm
         
         // disabled for now (check calculations first)
         //return amtToMove;
-        System.out.println("" + armCurAngle + "," + GRAV_CONSTANT + "," + armGoalAngle + "," + armPosRange);
+        //System.out.println("" + armCurAngle + "," + GRAV_CONSTANT + "," + armGoalAngle + "," + armPosRange);
         
         return amtToMove;
         
@@ -273,7 +297,7 @@ public class CargoArm
         requestedMove = amt;
     }
 
-    public void rotateArm(double amt)
+    public void manuallyRotateArm(double amt)
     {
         
         double armCurAngle = encCargoArm.angle() + ZERO_ANGLE;
@@ -294,12 +318,19 @@ public class CargoArm
                 //System.out.println("Engaging brake.");
             }
         }
+        //armLockEnabled = true;
+    }
+
+    public void rotateArm(double amt)
+    {
+        moTalBallArm.set(ControlMode.PercentOutput, amt);
     }
 
     // snap cargo arm to set positions
     // the actual motor movement takes place in periodic()
     public void setArmDown()
     {
+        armLockEnabled = false;
         // set hand to some known position that means "down"
         System.out.println("Setting cargo arm position to 'down'");
         armPositionTarget = armPositions[armPosDown];
@@ -307,12 +338,14 @@ public class CargoArm
     
     public void setArmLow()
     {
+        armLockEnabled = false;
         System.out.println("Setting cargo arm position to 'low'");
         armPositionTarget = armPositions[armPosLow];
     }
     
     public void setArmMid()
     {
+        armLockEnabled = false;
         System.out.println("Setting cargo arm position to 'mid'");
         armPositionTarget = armPositions[armPosMid];
     }
@@ -325,6 +358,7 @@ public class CargoArm
     
     public void setArmUp()
     {
+        armLockEnabled = false;
         System.out.println("Setting cargo arm position to 'up'");
         armPositionTarget = armPositions[armPosUp];
     }
