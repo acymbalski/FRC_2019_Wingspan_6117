@@ -154,7 +154,7 @@ public class Robot extends TimedRobot
 
     // driver1 controls ramp
     // press start and select together to deploy
-    if(driver1.pressed(driver1.Start) && driver1.pressed(driver1.Select))
+    if(driver1.down(driver1.Start) && driver1.down(driver1.Select))
     {
       ramp.deploy();
     }
