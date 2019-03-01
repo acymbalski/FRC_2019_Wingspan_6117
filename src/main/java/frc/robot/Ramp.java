@@ -16,4 +16,9 @@ public class Ramp
     {
         solRamp.set(true);
     }
+
+    public void undeploy()
+    {
+        solRamp.set(false);
+    }
 }

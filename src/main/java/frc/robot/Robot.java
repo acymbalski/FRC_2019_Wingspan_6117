@@ -160,6 +160,10 @@ public class Robot extends TimedRobot
     {
       ramp.deploy();
     }
+    else
+    {
+      ramp.undeploy();
+    }
 
     // driver 1 can double speed by holding L2
     //driveTrain.fastSpeed = driver1.down(driver1.L2);
@@ -289,27 +293,29 @@ public class Robot extends TimedRobot
     if(driver2.down(driver2.X))
     {
       //cargoArm.requestMove(-1 * speedModifier);
-      cargoArm.manuallyRotateArm(-0.3);
-      cargoArm.solArmBrake.set(false);
+      cargoArm.rotateArm(-1);
+      //cargoArm.solArmBrake.set(false);
     }
     else
     {
       if(driver2.down(driver2.Y))
       {
         //cargoArm.requestMove(2 * speedModifier);
-        cargoArm.manuallyRotateArm(0.5);
-        cargoArm.solArmBrake.set(false);
+        cargoArm.rotateArm(1);
+        //cargoArm.solArmBrake.set(false);
       }
       else
       {
-        cargoArm.rotateArm(cargoArm.getArmCalculation());
-        cargoArm.solArmBrake.set(true);
+        //cargoArm.rotateArm(cargoArm.getArmCalculation());
+        //cargoArm.solArmBrake.set(true);
+        cargoArm.rotateArm(0);
       }
     }
     if(driver2.released(driver2.X) || driver2.released(driver2.Y))
     {
-      cargoArm.setArmTarget(cargoArm.currentPosition());
-      cargoArm.solArmBrake.set(true);
+      //cargoArm.setArmTarget(cargoArm.currentPosition());
+      //cargoArm.solArmBrake.set(true);
+      cargoArm.rotateArm(0);
     }
 
     // if(driver2.dpad(driver2.Up))
