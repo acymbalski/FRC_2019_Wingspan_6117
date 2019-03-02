@@ -43,7 +43,7 @@ public class Robot extends TimedRobot
 
   // drewnote: This will alter all speeds!
   // typically we will set it to half to be safe until we're all set
-  public double speedModifier = 0.5;
+  public double speedModifier = 0.6;
 
   // USB cameras
   UsbCamera camFront, camBack;
@@ -215,7 +215,7 @@ public class Robot extends TimedRobot
     // up is out
     // down is in
     // (when it's negated)
-    cargoArm.spinBallMotor(d2LeftJoystick * 0.8);
+    cargoArm.spinBallMotor(d2LeftJoystick * 0.9);
 
     // control hatch placement pistons
     if(driver2.pressed(driver2.A))

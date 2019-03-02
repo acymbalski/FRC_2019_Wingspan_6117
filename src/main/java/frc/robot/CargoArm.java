@@ -388,17 +388,21 @@ public class CargoArm
 
     public void spinBallMotor(double amt)
     {
-        if(amt < 0)
-        {
-            System.out.println("Ball is being pulled...? Amt is neg");
-        }
+        // if(amt < 0.25)
+        // {
+        //     System.out.println("Ball is being pulled...? Amt is pos");
+        // }
+        // if(!limBallPresent.get())
+        // {
+        //     System.out.println("Limit switch pulled.");
+        // }
 
         // if the above is true, then you don't need to modify this
         // otherwise you might need to reverse it
-        if(amt < 0)
+        if(amt > 0.25)
         {
             // if we have a ball present AND we're pulling inward, stop pulling!
-            if(limBallPresent.get())
+            if(!limBallPresent.get())
             {
                 amt = 0;
             }
