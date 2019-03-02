@@ -57,39 +57,60 @@ public class DriveTrain
         // if driving forward
         if(orientation == 1)
         {
-        //     if(lastLSpeed != 0 && Math.abs(lastLSpeed - left_amt) > 0.5)
-        //     {
-        //         left_amt = (lastLSpeed + left_amt) / 2;
-        //     }
-        //     if(lastRSpeed != 0 && Math.abs(lastRSpeed - right_amt) > 0.5)
-        //     {
-        //         right_amt = (lastRSpeed + right_amt) / 2;
-        //     }
+            if(lastLSpeed != 0 && Math.abs(lastLSpeed - left_amt) > 0.5)
+            {
+                //left_amt = (lastLSpeed + left_amt) / 2;
+            }
+            if(lastRSpeed != 0 && Math.abs(lastRSpeed - right_amt) > 0.5)
+            {
+                System.out.print("Right drive speed exceeded max change! Instead of (" + right_amt + "), it is being changed to ");
+                //right_amt = (lastRSpeed + right_amt) / 2;
+                if(lastRSpeed < right_amt)
+                {
+                    right_amt = lastRSpeed + 0.1;
+                }
+                else
+                {
+                    right_amt = lastRSpeed - 0.1;
+                }
+                System.out.println("(" + right_amt + ")");
+            }
 
             set_left_motors(left_amt);
             set_right_motors(right_amt);
 
-            // lastLSpeed = left_amt;
-            // lastRSpeed = right_amt;
+            lastLSpeed = left_amt;
+            lastRSpeed = right_amt;
         }
         // otherwise, if driving backwards, flip the controls
         // (and reverse which joystick controls which motor)
         else if(orientation == -1)
         {
-            // if(lastLSpeed != 0 && Math.abs(lastLSpeed - left_amt) > 0.5)
-            // {
-            //     left_amt = (lastLSpeed + left_amt) / 2;
-            // }
-            // if(lastRSpeed != 0 && Math.abs(lastRSpeed - right_amt) > 0.5)
-            // {
-            //     right_amt = (lastRSpeed + right_amt) / 2;
-            // }
+            if(lastLSpeed != 0 && Math.abs(lastLSpeed - left_amt) > 0.5)
+            {
+                //left_amt = (lastLSpeed + left_amt) / 2;
+            }
+            if(lastRSpeed != 0 && Math.abs(lastRSpeed - right_amt) > 0.5)
+            {
+                //right_amt = (lastRSpeed + right_amt) / 2;
+                
+                System.out.print("Right drive speed exceeded max change! Instead of (" + right_amt + "), it is being changed to ");
+                if(lastRSpeed < right_amt)
+                {
+                    right_amt = lastRSpeed + 0.1;
+                }
+                else
+                {
+                    right_amt = lastRSpeed - 0.1;
+                }
+                System.out.println("(" + right_amt + ")");
+            }
 
             set_left_motors(right_amt);
             set_right_motors(left_amt);
             
-            // lastLSpeed = left_amt;
-            // lastRSpeed = right_amt;
+            lastLSpeed = left_amt;
+            lastRSpeed = right_amt;
         }
     }
 
