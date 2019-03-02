@@ -57,14 +57,14 @@ public class DriveTrain
         // if driving forward
         if(orientation == 1)
         {
-        //     if(lastLSpeed != 0 && Math.abs(lastLSpeed - left_amt) > 0.5)
-        //     {
-        //         left_amt = (lastLSpeed + left_amt) / 2;
-        //     }
-        //     if(lastRSpeed != 0 && Math.abs(lastRSpeed - right_amt) > 0.5)
-        //     {
-        //         right_amt = (lastRSpeed + right_amt) / 2;
-        //     }
+            // if(lastLSpeed != 0 && Math.abs(lastLSpeed - left_amt) > 0.5)
+            // {
+            //     left_amt = (lastLSpeed + (left_amt / 10)) / 2;
+            // }
+            // if(lastRSpeed != 0 && Math.abs(lastRSpeed - right_amt) > 0.5)
+            // {
+            //     right_amt = (lastRSpeed + (right_amt/ 10)) / 2;
+            // }
 
             set_left_motors(left_amt);
             set_right_motors(right_amt);
@@ -78,11 +78,11 @@ public class DriveTrain
         {
             // if(lastLSpeed != 0 && Math.abs(lastLSpeed - left_amt) > 0.5)
             // {
-            //     left_amt = (lastLSpeed + left_amt) / 2;
+            //     left_amt = (lastLSpeed + (left_amt / 10)) / 2;
             // }
             // if(lastRSpeed != 0 && Math.abs(lastRSpeed - right_amt) > 0.5)
             // {
-            //     right_amt = (lastRSpeed + right_amt) / 2;
+            //     right_amt = (lastRSpeed + (right_amt / 10)) / 2;
             // }
 
             set_left_motors(right_amt);

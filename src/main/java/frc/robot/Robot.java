@@ -215,7 +215,7 @@ public class Robot extends TimedRobot
     // up is out
     // down is in
     // (when it's negated)
-    cargoArm.spinBallMotor(Math.round(d2LeftJoystick));
+    cargoArm.spinBallMotor(d2LeftJoystick * 0.8);
 
     // control hatch placement pistons
     if(driver2.pressed(driver2.A))
