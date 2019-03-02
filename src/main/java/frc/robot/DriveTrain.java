@@ -11,12 +11,15 @@ public class DriveTrain
     private TalonSRX moTalWhlL, moTalWhlR;
     private VictorSPX moVicWhlL, moVicWhlR;
 
+    private double lastLSpeed = 0;
+    private double lastRSpeed = 0;
+
     // so we can flip forwards/backwards driving
     private int orientation;
 
     private Encoder encLeft, encRight;
 
-    public boolean fastSpeed = false;
+    public boolean fastSpeed = true;
     
     public DriveTrain()
     {
@@ -54,15 +57,39 @@ public class DriveTrain
         // if driving forward
         if(orientation == 1)
         {
+        //     if(lastLSpeed != 0 && Math.abs(lastLSpeed - left_amt) > 0.5)
+        //     {
+        //         left_amt = (lastLSpeed + left_amt) / 2;
+        //     }
+        //     if(lastRSpeed != 0 && Math.abs(lastRSpeed - right_amt) > 0.5)
+        //     {
+        //         right_amt = (lastRSpeed + right_amt) / 2;
+        //     }
+
             set_left_motors(left_amt);
             set_right_motors(right_amt);
+
+            // lastLSpeed = left_amt;
+            // lastRSpeed = right_amt;
         }
         // otherwise, if driving backwards, flip the controls
         // (and reverse which joystick controls which motor)
         else if(orientation == -1)
         {
+            // if(lastLSpeed != 0 && Math.abs(lastLSpeed - left_amt) > 0.5)
+            // {
+            //     left_amt = (lastLSpeed + left_amt) / 2;
+            // }
+            // if(lastRSpeed != 0 && Math.abs(lastRSpeed - right_amt) > 0.5)
+            // {
+            //     right_amt = (lastRSpeed + right_amt) / 2;
+            // }
+
             set_left_motors(right_amt);
             set_right_motors(left_amt);
+            
+            // lastLSpeed = left_amt;
+            // lastRSpeed = right_amt;
         }
     }
 

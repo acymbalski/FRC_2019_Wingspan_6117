@@ -167,7 +167,7 @@ public class Robot extends TimedRobot
 
     // driver 1 can double speed by holding L2
     //driveTrain.fastSpeed = driver1.down(driver1.L2);
-    if(driver1.pressed(driver1.L2))
+    if(driver1.pressed(driver1.A))
     {
       driveTrain.fastSpeed = !driveTrain.fastSpeed;
       System.out.println("Fast speed toggled to: " + driveTrain.fastSpeed);
@@ -250,13 +250,13 @@ public class Robot extends TimedRobot
     // R2 will rotate it forward
     if(driver2.down(driver2.L1))
     {
-      hatchArm.rotateFinger(1 * speedModifier);
+      hatchArm.rotateFinger(1);
     }
     else
     {
       if(driver2.down(driver2.L2))
       {
-        hatchArm.rotateFinger(-1 * speedModifier);
+        hatchArm.rotateFinger(-1);
       }
       else
       {
@@ -271,13 +271,13 @@ public class Robot extends TimedRobot
     // R1 will move it the other way
     if(driver2.down(driver2.R1))
     {
-      hatchArm.rotateArm(-1 * speedModifier * 0.75);
+      hatchArm.rotateArm(-1 * speedModifier);// * 0.75);
     }
     else
     {
       if(driver2.down(driver2.R2))
       {
-        hatchArm.rotateArm(1 * speedModifier * 0.75);
+        hatchArm.rotateArm(1 * speedModifier);// * 0.75);
       }
       else
       {

@@ -333,7 +333,7 @@ public class CargoArm
         // b/c the arm cannot be moved without motor power (too strong)
         // preventing reach of the zero bar with necessary tolerance will prevent us
         // from actually zeroing ever
-        if((encCargoArm.position() < -6600 && amt < 0) || (encCargoArm.position() < -6200 && handIsExtended && amt < 0))
+        if((encCargoArm.position() < -6800 && amt < 0) || (encCargoArm.position() < -6500 && handIsExtended && amt < 0))
         {
             System.out.println("Arm not moving to prevent crushing!");
             moTalBallArm.set(ControlMode.PercentOutput, 0);
