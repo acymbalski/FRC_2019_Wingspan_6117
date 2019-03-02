@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class CargoArm
@@ -17,6 +18,8 @@ public class CargoArm
 
     Solenoid solHandExtend;
     Solenoid solArmBrake;
+
+    DigitalInput limBallPresent;
 
     Boolean handIsExtended = false;
 
@@ -60,6 +63,8 @@ public class CargoArm
 
         solHandExtend = new Solenoid(2);
         solArmBrake = new Solenoid(1);
+
+        limBallPresent = new DigitalInput(1);
 
         armPositions = new double[4];
 
@@ -383,6 +388,23 @@ public class CargoArm
 
     public void spinBallMotor(double amt)
     {
+        if(amt < 0)
+        {
+            System.out.println("Ball is being pulled...? Amt is neg");
+        }
+
+        // if the above is true, then you don't need to modify this
+        // otherwise you might need to reverse it
+        if(amt < 0)
+        {
+            // if we have a ball present AND we're pulling inward, stop pulling!
+            if(limBallPresent.get())
+            {
+                amt = 0;
+            }
+        }
+
+        
         moVicBallRoll.set(ControlMode.PercentOutput, amt);
     }
 
