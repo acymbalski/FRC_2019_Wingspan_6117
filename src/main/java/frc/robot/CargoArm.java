@@ -20,6 +20,7 @@ public class CargoArm
     Solenoid solArmBrake;
 
     DigitalInput limBallPresent;
+    DigitalInput limArmAtZero;
 
     Boolean handIsExtended = false;
 
@@ -51,6 +52,12 @@ public class CargoArm
     // in that position, the ENCODER value is 0, but we will adjust the angle value in here by this amount
     double ZERO_ANGLE = 21;
 
+    // competition 2
+    // use this bool if the driver sets a target position
+    // if this is true, continue to move to target position
+    // if driver engages manual control at any time, set this to false & stop moving automatically
+    Boolean moveToPosition = false;
+
 
     public CargoArm()
     {
@@ -65,6 +72,8 @@ public class CargoArm
         solArmBrake = new Solenoid(1);
 
         limBallPresent = new DigitalInput(1);
+        // theoretical; if we can install the limit switch for the cargo arm in the Up position, uncomment below
+        limArmAtZero = new DigitalInput(2);
 
         armPositions = new double[4];
 
@@ -91,6 +100,8 @@ public class CargoArm
         armPositionTarget = 0;
         //solArmBrake.set(true);
         solArmBrake.set(false);
+
+        moveToPosition = false;
     
     }
 
@@ -327,10 +338,10 @@ public class CargoArm
         //armLockEnabled = true;
     }
 
-    public void rotateArm(double amt)
+    public Boolean isSafeToMove(double encCount, double amt)
     {
-        
-        //moTalBallArm.set(ControlMode.PercentOutput, amt);
+        Boolean isSafe = true;
+
         // prevent arm from going too low unless its arm is pulled in ("not extended")
         // prevent arm from going too low in general (i.e. smashing the hand into the metal frame)
         // these checks only apply when the arm is moving down
@@ -338,15 +349,106 @@ public class CargoArm
         // b/c the arm cannot be moved without motor power (too strong)
         // preventing reach of the zero bar with necessary tolerance will prevent us
         // from actually zeroing ever
-        if((encCargoArm.position() < -6800 && amt < 0) || (encCargoArm.position() < -6500 && handIsExtended && amt < 0))
+        if((encCount < -6800 && amt < 0) || (encCount < -6500 && handIsExtended && amt < 0))
         {
             System.out.println("Arm not moving to prevent crushing!");
-            moTalBallArm.set(ControlMode.PercentOutput, 0);
+            isSafe = false;
         }
         else
         {
-            moTalBallArm.set(ControlMode.PercentOutput, amt);
+            isSafe = true;
         }
+        return isSafe;
+    }
+
+    public void rotateArm(double amt)
+    {
+        
+        // if driver is manually setting this value, snap out of auto-move
+        if(amt != 0)
+        {
+            moveToPosition = false;
+        }
+
+        // if arm hits the Zero switch, zero the encoder and stop moving
+        if(!limArmAtZero.get())
+        {
+            moveToPosition = false;
+            moTalBallArm.set(ControlMode.PercentOutput, 0);
+            zeroEncoder();
+
+            // do not allow arm to move backwards
+            if(amt > 0)
+            {
+                return;
+            }
+        }
+
+        //moTalBallArm.set(ControlMode.PercentOutput, amt);
+        // if((encCargoArm.position() < -6800 && amt < 0) || (encCargoArm.position() < -6500 && handIsExtended && amt < 0))
+        // {
+        //     System.out.println("Arm not moving to prevent crushing!");
+        //     moTalBallArm.set(ControlMode.PercentOutput, 0);
+        // }
+
+        // else
+        // {
+        if(moveToPosition)
+        {
+            if((encCargoArm.position() - armPositionTarget) < -ENCODER_TOLERANCE)
+            {
+                if(isSafeToMove(encCargoArm.position(), 0.4))
+                {
+                    moTalBallArm.set(ControlMode.PercentOutput, 0.4);
+                }
+                else
+                {
+                    moTalBallArm.set(ControlMode.PercentOutput, 0);
+                    // not safe to move anymore, let's stop the move-to
+                    moveToPosition = false;
+                }
+            }
+            else
+            {
+                if((encCargoArm.position() - armPositionTarget) > ENCODER_TOLERANCE)
+                {
+                   // moTalBallArm.set(ControlMode.PercentOutput, -0.3);
+                    
+                    if(isSafeToMove(encCargoArm.position(), -0.3))
+                    {
+                        moTalBallArm.set(ControlMode.PercentOutput, -0.3);
+                    }
+                    else
+                    {
+                        moTalBallArm.set(ControlMode.PercentOutput, 0);
+
+                        // not safe to move anymore, let's stop the move-to
+                        moveToPosition = false;
+                    }
+                }
+
+                // else, we must be at our location
+                else
+                {
+                    moTalBallArm.set(ControlMode.PercentOutput, 0);
+                    moveToPosition = false;
+                }
+            }
+        }
+        else
+        {
+            //moTalBallArm.set(ControlMode.PercentOutput, amt);
+            
+            if(isSafeToMove(encCargoArm.position(), amt))
+            {
+                moTalBallArm.set(ControlMode.PercentOutput, amt);
+            }
+            else
+            {
+                moTalBallArm.set(ControlMode.PercentOutput, 0);
+            }
+        }
+        //}
     }
 
     // snap cargo arm to set positions
@@ -357,6 +459,7 @@ public class CargoArm
         // set hand to some known position that means "down"
         System.out.println("Setting cargo arm position to 'down'");
         armPositionTarget = armPositions[armPosDown];
+        moveToPosition = true;
     }
     
     public void setArmLow()
@@ -364,6 +467,7 @@ public class CargoArm
         armLockEnabled = false;
         System.out.println("Setting cargo arm position to 'low'");
         armPositionTarget = armPositions[armPosLow];
+        moveToPosition = true;
     }
     
     public void setArmMid()
@@ -371,12 +475,14 @@ public class CargoArm
         armLockEnabled = false;
         System.out.println("Setting cargo arm position to 'mid'");
         armPositionTarget = armPositions[armPosMid];
+        moveToPosition = true;
     }
 
     public void setArmTarget(double target)
     {
         System.out.println("Setting arm target to: " + target);
         armPositionTarget = target;
+        moveToPosition = true;
     }
     
     public void setArmUp()
@@ -384,6 +490,7 @@ public class CargoArm
         armLockEnabled = false;
         System.out.println("Setting cargo arm position to 'up'");
         armPositionTarget = armPositions[armPosUp];
+        moveToPosition = true;
     }
 
     public void spinBallMotor(double amt)
@@ -432,6 +539,7 @@ public class CargoArm
 
     public void zeroEncoder()
     {
+        System.out.println("Zeroing the cargo arm!");
         encCargoArm.initQuad();
     }
 }

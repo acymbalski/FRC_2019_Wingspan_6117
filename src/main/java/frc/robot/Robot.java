@@ -43,7 +43,9 @@ public class Robot extends TimedRobot
 
   // drewnote: This will alter all speeds!
   // typically we will set it to half to be safe until we're all set
-  public double speedModifier = 0.6;
+
+  //  drewnote: this is set to full speed - bad idea!
+  public double speedModifier = 1; //0.6;
 
   // USB cameras
   UsbCamera camFront, camBack;
@@ -134,6 +136,11 @@ public class Robot extends TimedRobot
     {
       System.out.println("Not re-initializing!");
     }
+    
+    hatchArm.finger_target = 0;
+    hatchArm.finger_moving = false;
+    hatchArm.dirMoving = 0;
+    hatchArm.zero();
   }
 
   public void commonPeriodic()
@@ -318,22 +325,22 @@ public class Robot extends TimedRobot
       cargoArm.rotateArm(0);
     }
 
-    // if(driver2.dpad(driver2.Up))
-    // {
-    //   cargoArm.setArmUp();
-    // }
-    // if(driver2.dpad(driver2.Down))
-    // {
-    //   cargoArm.setArmDown();
-    // }
-    // if(driver2.dpad(driver2.Left))
-    // {
-    //   cargoArm.setArmMid();
-    // }
-    // if(driver2.dpad(driver2.Right))
-    // {
-    //   cargoArm.setArmLow();
-    // }
+    if(driver2.dpad(driver2.Up))
+    {
+      cargoArm.setArmUp();
+    }
+    if(driver2.dpad(driver2.Down))
+    {
+      cargoArm.setArmDown();
+    }
+    if(driver2.dpad(driver2.Left))
+    {
+      cargoArm.setArmMid();
+    }
+    if(driver2.dpad(driver2.Right))
+    {
+      cargoArm.setArmLow();
+    }
 
     if(driver2.pressed(driver2.LThumb))
     {
@@ -493,11 +500,20 @@ public class Robot extends TimedRobot
     {
         System.out.println("Cargo arm is at encoder value: " + cargoArm.encCargoArm.position());
         System.out.println("Which is " + (cargoArm.encCargoArm.angle() + cargoArm.ZERO_ANGLE) + " degrees.");
+ 
+        System.out.println("Hatch finger is at encoder value: " + hatchArm.fingerEncValue());
     }
     if(driver2.pressed(driver2.Select))
     {
         cargoArm.zeroEncoder();
         System.out.println("Cargo arm zeroed.");
+
+        hatchArm.zero();
+        System.out.println("Hatch finger zeroed.");
+
+        hatchArm.finger_target = 0;
+        hatchArm.finger_moving = false;
+        hatchArm.dirMoving = 0;
     }
     
     if(driver2.pressed(driver2.B))
@@ -522,18 +538,38 @@ public class Robot extends TimedRobot
         System.out.println("Test goal angle decremented to " + testGoalAngle);
     }
     
-    // adjust gravitational constant for on-the-go tweak testing
-    // if you don't know what you're doing, do not try to do this!
-    if(driver2.pressed(driver2.R1))
+    // // adjust gravitational constant for on-the-go tweak testing
+    // // if you don't know what you're doing, do not try to do this!
+    // if(driver2.pressed(driver2.R1))
+    // {
+    //     cargoArm.GRAV_CONSTANT += 0.02;
+    //     System.out.println("Gravitational constant incremented to " + cargoArm.GRAV_CONSTANT);
+    // }
+    // if(driver2.pressed(driver2.L1))
+    // {
+    //     cargoArm.GRAV_CONSTANT -= 0.02;
+    //     System.out.println("Gravitational constant decremented to " + cargoArm.GRAV_CONSTANT);
+    // }
+        // button 7: L2
+    // button 8: R2
+    // L2 will reverse the finger
+    // R2 will rotate it forward
+    if(driver2.down(driver2.L1))
     {
-        cargoArm.GRAV_CONSTANT += 0.02;
-        System.out.println("Gravitational constant incremented to " + cargoArm.GRAV_CONSTANT);
+      hatchArm.rotateFinger(1);
     }
-    if(driver2.pressed(driver2.L1))
+    else
     {
-        cargoArm.GRAV_CONSTANT -= 0.02;
-        System.out.println("Gravitational constant decremented to " + cargoArm.GRAV_CONSTANT);
+      if(driver2.down(driver2.L2))
+      {
+        hatchArm.rotateFinger(-1);
+      }
+      else
+      {
+        hatchArm.rotateFinger(0);
+      }
     }
+    hatchArm.periodic();
 
     // test brake power
     if(driver2.pressed(driver2.Start))
@@ -554,17 +590,27 @@ public class Robot extends TimedRobot
       }
     }
 
-    if(driver2.down(driver2.L2) && driver2.pressed(driver2.R2))
+    // if(driver2.down(driver2.L2) && driver2.pressed(driver2.R2))
+    // {
+    //   movementInTest = !movementInTest;
+    //   if(movementInTest)
+    //   {
+    //     System.out.println("Movement in test has been enabled!");
+    //   }
+    //   else
+    //   {
+    //     System.out.println("Movement in test has been disabled.");
+    //   }
+    // }
+    if(driver2.pressed(driver2.R1))
     {
-      movementInTest = !movementInTest;
-      if(movementInTest)
-      {
-        System.out.println("Movement in test has been enabled!");
-      }
-      else
-      {
-        System.out.println("Movement in test has been disabled.");
-      }
+      System.out.println("Moving hatch finger to UP");
+      hatchArm.fingerUp();
+    }
+    if(driver2.pressed(driver2.R2))
+    {
+      System.out.println("Moving hatch finger to GRAB");
+      hatchArm.fingerGrab();
     }
 
     if(movementInTest)
