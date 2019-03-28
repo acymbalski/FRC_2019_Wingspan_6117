@@ -131,6 +131,15 @@ public class Robot extends TimedRobot
         driver2 = new Buttons(joysticks[1]);
       }
       
+
+      hatchArm.finger_target = 0;
+      hatchArm.finger_moving = false;
+      hatchArm.dirMoving = 0;
+      hatchArm.zero();
+      
+      hatchArm.fingerSentDown = false;
+      hatchArm.toggleFinger();
+
       initted = true;
     }
     else
@@ -138,15 +147,6 @@ public class Robot extends TimedRobot
       System.out.println("Not re-initializing!");
     }
     
-    hatchArm.finger_target = 0;
-    hatchArm.finger_moving = false;
-    hatchArm.dirMoving = 0;
-    hatchArm.zero();
-    
-    hatchArm.fingerSentDown = false;
-    hatchArm.toggleFinger();
-    //hatchArm.finger_target = hatchArm.FINGER_GRAB_ENC;
-    //hatchArm.finger_moving = true;
   }
 
   public void commonPeriodic()
