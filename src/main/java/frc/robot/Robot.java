@@ -108,6 +108,7 @@ public class Robot extends TimedRobot
   {
     movementInTest = false;
 
+
     if(!initted)
     {
 
@@ -141,6 +142,11 @@ public class Robot extends TimedRobot
     hatchArm.finger_moving = false;
     hatchArm.dirMoving = 0;
     hatchArm.zero();
+    
+    hatchArm.fingerSentDown = false;
+    hatchArm.toggleFinger();
+    //hatchArm.finger_target = hatchArm.FINGER_GRAB_ENC;
+    //hatchArm.finger_moving = true;
   }
 
   public void commonPeriodic()
@@ -166,6 +172,7 @@ public class Robot extends TimedRobot
     if(driver1.down(driver1.Start) && driver1.down(driver1.Select))
     {
       ramp.deploy();
+      hatchArm.fingerGrab();
     }
     else
     {
@@ -243,6 +250,7 @@ public class Robot extends TimedRobot
     if(driver2.pressed(driver2.Select))
     {
       //cargoArm.toggleArmLock();
+      hatchArm.toggleFinger();
     }
 
     // extend/de-extend cargo hand
@@ -352,6 +360,10 @@ public class Robot extends TimedRobot
       cargoArm.toggleBrake();
     }
 
+
+    // allow move-to calculations to occur
+    hatchArm.periodic();
+    cargoArm.periodic();
   }
 
   @Override
@@ -516,12 +528,12 @@ public class Robot extends TimedRobot
         hatchArm.dirMoving = 0;
     }
     
-    if(driver2.pressed(driver2.B))
-    {
-        cargoArm.armPositionTarget = testGoalAngle * 56.9;
-        double forceToApply = cargoArm.getArmCalculation();
-        System.out.println("To reach the goal of " + testGoalAngle + ", the following force would be applied: " + forceToApply);
-    }
+    // if(driver2.pressed(driver2.B))
+    // {
+    //     cargoArm.armPositionTarget = testGoalAngle * 56.9;
+    //     //double forceToApply = cargoArm.getArmCalculation();
+    //     System.out.println("To reach the goal of " + testGoalAngle + ", the following force would be applied: " + forceToApply);
+    // }
     
     // adjust test goal angle to combine with the above to see, without moving, a cargo arm motor speed to apply
     if(driver2.dpad(driver2.Up))
@@ -571,6 +583,11 @@ public class Robot extends TimedRobot
     }
     hatchArm.periodic();
 
+    if(driver2.pressed(driver2.B))
+    {
+      hatchArm.toggleFinger();
+    }
+
     // test brake power
     if(driver2.pressed(driver2.Start))
     {
@@ -613,10 +630,10 @@ public class Robot extends TimedRobot
       hatchArm.fingerGrab();
     }
 
-    if(movementInTest)
-    {
-      cargoArm.rotateArm(cargoArm.getArmCalculation());
-    }
+    // if(movementInTest)
+    // {
+    //   cargoArm.rotateArm(cargoArm.getArmCalculation());
+    // }
     
     // // this is an attempt to read values from the DriverStation so we can edit constants without redeploying
     // // this may need tweaking b/c the resource that said this was possible was from 2013

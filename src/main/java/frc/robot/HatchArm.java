@@ -32,11 +32,18 @@ public class HatchArm
     int dirMoving = 0;
     int fingerEncCount = 0;
     int finger_target = 0; 
-    int FINGER_UP_ENC = -100; // broad assumption! check later.
-    int FINGER_GRAB_ENC = -40; // broad assumption! check later.
+    int FINGER_UP_ENC = -5; // broad assumption! check later.
+    int FINGER_NEUTRAL_ENC = 1;
+    int FINGER_GRAB_ENC = 75; // broad assumption! check later.
     int ENC_TOLERANCE = 1;//5;
     Boolean finger_moving = false;
     int dirToMove = 0;
+    DigitalInput limFingerZero;
+    Boolean fingerSentDown = false;
+
+    // if this is true, move the finger down to the "grab" location,
+    // then move it back up to a neutral position (zero?) so it can be launched off
+    Boolean fingerPinch = true;
 
     public HatchArm()
     {
@@ -58,6 +65,8 @@ public class HatchArm
         fingerEncCount = 0;
         finger_moving = false;
         finger_target = 0;
+        limFingerZero = new DigitalInput(4);
+        fingerSentDown = false;
     }
 
     public HatchArm(int pcmPushPort, int canPushPort, int pcmRetractPort, int canRetractPort)
@@ -73,6 +82,9 @@ public class HatchArm
         fingerEncCount = 0;
         finger_moving = false;
         finger_target = 0;
+        limFingerZero = new DigitalInput(4);
+    
+        fingerSentDown = false;
     }
 
     public void closeGrabber()
@@ -94,7 +106,9 @@ public class HatchArm
 
     public void zero()
     {
+        System.out.println("Zeroing hatch finger!");
         fingerEncCount = 0;
+        fingerCounter.reset();
     }
 
     /**
@@ -151,7 +165,22 @@ public class HatchArm
 	 */
     public void rotateFinger(double amt)
     {
-        moVicHatFin.set(ControlMode.PercentOutput, amt);
+        if(!limFingerZero.get())
+        {
+            System.out.println("Limit switch pressed!");
+            if(amt < 0)
+            {
+                moVicHatFin.set(ControlMode.PercentOutput, 0);
+            }
+            else
+            {
+                moVicHatFin.set(ControlMode.PercentOutput, amt);
+            }
+        }
+        else
+        {
+            moVicHatFin.set(ControlMode.PercentOutput, amt);
+        }
 
 
         if(amt == 0)
@@ -187,7 +216,13 @@ public class HatchArm
     {
         //moVicHatFin.set(ControlMode.PercentOutput, dirToMove);
         //rotateFinger(dirToMove);
-        System.out.println("Finger at: " + fingerEncCount);
+        //System.out.println("Finger at: " + fingerEncCount);
+
+        //System.out.println(limFingerZero.get());
+        if(!limFingerZero.get())
+        {
+            zero();
+        }
 
         if(dirMoving > 0)
         {
@@ -208,9 +243,20 @@ public class HatchArm
             if(Math.abs(fingerEncCount - finger_target) <= ENC_TOLERANCE)
             {
                 System.out.println("finger at target!");
-                rotateFinger(0);
-                finger_target = 0;
-                finger_moving = false;
+
+                // if(finger_target == FINGER_GRAB_ENC && fingerPinch)
+                // {
+                //     finger_target = FINGER_NEUTRAL_ENC;
+
+                // }
+                // else
+                // {
+
+                    rotateFinger(0);
+                    finger_target = 0;
+                    finger_moving = false;
+
+                //}
             }
             // else, move towards target
             else
@@ -222,16 +268,27 @@ public class HatchArm
                     // fingerEncCount -= fingerCounter.get();
                     // fingerCounter.reset();
                     
-            fingerEncCount -= fingerCounter.get();
-            fingerCounter.reset();
-                    rotateFinger(-1);
+                    fingerEncCount -= fingerCounter.get();
+                    fingerCounter.reset();
+
+                    // if we're at the zero position, stop moving!
+                    if(!limFingerZero.get())
+                    {
+                        rotateFinger(0);
+                        finger_target = 0;
+                        finger_moving = false;
+                    }
+                    else
+                    {
+                        rotateFinger(-1);
+                    }
                 }
                 else
                 {
                     System.out.println("Finger rotating POSITIVE toward target...");
                     
-            fingerEncCount += fingerCounter.get();
-            fingerCounter.reset();
+                    fingerEncCount += fingerCounter.get();
+                    fingerCounter.reset();
                     rotateFinger(1);
                 }
             }
@@ -272,5 +329,22 @@ public class HatchArm
         solHatchRetract.set(pistonsOut);
         pistonsOut = !pistonsOut;
     }
+
+    public void toggleFinger()
+    {
+        if(fingerSentDown)
+        {
+            finger_target = FINGER_UP_ENC;
+            finger_moving = true;
+        }
+        else
+        {
+            finger_target = FINGER_GRAB_ENC;
+            finger_moving = true;
+        }
+        
+        fingerSentDown = !fingerSentDown;
+    }
+
 
 }
