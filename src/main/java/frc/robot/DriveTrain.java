@@ -19,7 +19,7 @@ public class DriveTrain
 
     private Encoder encLeft, encRight;
 
-    public boolean fastSpeed = true;
+    public boolean slowSpeed = true;
     
     public DriveTrain()
     {
@@ -40,7 +40,7 @@ public class DriveTrain
         encLeft = new Encoder(moTalWhlL, 1);
         encRight = new Encoder(moTalWhlR, 0);
 
-        orientation = 1;
+        orientation = -1;
 
         // stop all motors
         stop();
@@ -137,14 +137,14 @@ public class DriveTrain
 
     public void set_left_motors(double amt)
     {
-        moTalWhlL.set(ControlMode.PercentOutput, amt * orientation * (fastSpeed ? 2 : 1));
-        moVicWhlL.set(ControlMode.PercentOutput, amt * orientation * (fastSpeed ? 2 : 1));
+        moTalWhlL.set(ControlMode.PercentOutput, amt * orientation);// * (slowSpeed ? 0.5 : 1.0));
+        moVicWhlL.set(ControlMode.PercentOutput, amt * orientation);// * (slowSpeed ? 0.5 : 1.0));
     }
 
     public void set_right_motors(double amt)
     {
-        moTalWhlR.set(ControlMode.PercentOutput, -amt * orientation * (fastSpeed ? 2 : 1));
-        moVicWhlR.set(ControlMode.PercentOutput, -amt * orientation * (fastSpeed ? 2 : 1));
+        moTalWhlR.set(ControlMode.PercentOutput, -amt * orientation);// * (slowSpeed ? 0.5 : 1.0));
+        moVicWhlR.set(ControlMode.PercentOutput, -amt * orientation);// * (slowSpeed ? 0.5 : 1.0));
     }
 
     public void stop()

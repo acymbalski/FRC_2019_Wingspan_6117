@@ -92,6 +92,11 @@ public class Robot extends TimedRobot
 
     commonInit();
 
+    // move hatch finger down
+    
+    hatchArm.fingerSentDown = false;
+    hatchArm.toggleFinger();
+
     System.out.println("Autonomous initialization complete.");
   }
 
@@ -137,8 +142,6 @@ public class Robot extends TimedRobot
       hatchArm.dirMoving = 0;
       hatchArm.zero();
       
-      hatchArm.fingerSentDown = false;
-      hatchArm.toggleFinger();
 
       initted = true;
     }
@@ -183,8 +186,8 @@ public class Robot extends TimedRobot
     //driveTrain.fastSpeed = driver1.down(driver1.L2);
     if(driver1.pressed(driver1.A))
     {
-      driveTrain.fastSpeed = !driveTrain.fastSpeed;
-      System.out.println("Fast speed toggled to: " + driveTrain.fastSpeed);
+      driveTrain.slowSpeed = !driveTrain.slowSpeed;
+      System.out.println("Fast speed toggled to: " + driveTrain.slowSpeed);
     }
 
     //drive straight
@@ -229,7 +232,7 @@ public class Robot extends TimedRobot
     // up is out
     // down is in
     // (when it's negated)
-    cargoArm.spinBallMotor(d2LeftJoystick * 0.9);
+    cargoArm.spinBallMotor(-1 * d2LeftJoystick * 0.9);
 
     // control hatch placement pistons
     if(driver2.pressed(driver2.A))
