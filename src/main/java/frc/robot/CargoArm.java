@@ -78,9 +78,9 @@ public class CargoArm
         armPositions = new double[4];
 
         armPositions[0] = 0;
-        armPositions[1] = -2835;
-        armPositions[2] = -3880;
-        armPositions[3] = -5775;
+        armPositions[1] = -3995;
+        armPositions[2] = -2571;
+        armPositions[3] = -5652;
 
 
         // get max (abs) value for the range of our arm movement
@@ -519,7 +519,7 @@ public class CargoArm
 
         // if the above is true, then you don't need to modify this
         // otherwise you might need to reverse it
-        if(amt > 0.25)
+        if(amt < -0.25)
         {
             // if we have a ball present AND we're pulling inward, stop pulling!
             if(!limBallPresent.get())
